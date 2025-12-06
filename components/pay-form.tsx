@@ -335,6 +335,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
               value={cardHolderName}
               onChange={(e) => setCardHolderName(e.target.value.toUpperCase())}
               placeholder="CARDHOLDER NAME"
+              dir="ltr"
               className="h-14 md:h-16 text-lg md:text-xl uppercase border-2 border-gray-300 focus:border-[#0a4a68] rounded-xl"
               required
             />
@@ -363,6 +364,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
               onChange={handleCardNumberChange}
               placeholder="1234 5678 9012 3456"
               maxLength={19}
+              dir="ltr"
               className={`h-14 md:h-16 text-xl md:text-2xl font-mono tracking-wider border-2 rounded-xl transition-all ${
                 isValidCard 
                   ? "border-green-500 focus:border-green-600" 
@@ -389,6 +391,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
                 onChange={handleExpiryDateChange}
                 placeholder="MM/YY"
                 maxLength={5}
+                dir="ltr"
                 className={`h-14 md:h-16 text-xl md:text-2xl font-mono border-2 rounded-xl ${
                   expiryError 
                     ? "border-red-500 focus:border-red-600" 
@@ -411,6 +414,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
                 onChange={handleCvvChange}
                 placeholder="123"
                 maxLength={3}
+                dir="ltr"
                 className="h-14 md:h-16 text-xl md:text-2xl font-mono border-2 border-gray-300 focus:border-[#0a4a68] rounded-xl"
                 required
               />
