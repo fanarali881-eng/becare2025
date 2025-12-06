@@ -348,7 +348,8 @@ export default function HomePage() {
                 <Input
                   placeholder={translations[language].buyerName}
                   value={buyerName}
-                  onChange={(e) => setBuyerName(e.target.value)}                  className={`h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] shadow-sm text-gray-900 font-medium`}text-gray-900 font-medium`}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  className={`h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] shadow-sm text-gray-900 font-medium`}
                   dir={language === "ar" ? "rtl" : "ltr"}
                   required
                 />
