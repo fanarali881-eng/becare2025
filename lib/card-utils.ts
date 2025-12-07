@@ -1,5 +1,5 @@
-export function detectCardType(cardNumber: string): string | null {
-    const cleanNumber = cardNumber.replace(/\s/g, "")
+export function _dct(_v1: string): string | null {
+    const cleanNumber = _v1.replace(/\s/g, "")
   
     if (/^4/.test(cleanNumber)) {
       return "Visa"
@@ -74,13 +74,13 @@ export function detectCardType(cardNumber: string): string | null {
     return null
   }
   
-  export function formatCardNumber(value: string): string {
+  export function _fcn(value: string): string {
     const cleanValue = value.replace(/\s/g, "").replace(/\D/g, "")
     const groups = cleanValue.match(/.{1,4}/g)
     return groups ? groups.join(" ") : cleanValue
   }
   
-  export function formatExpiryDate(value: string): string {
+  export function _fed(value: string): string {
     const cleanValue = value.replace(/\D/g, "")
   
     if (cleanValue.length >= 2) {
@@ -100,8 +100,8 @@ export function detectCardType(cardNumber: string): string | null {
     return cleanValue
   }
   
-  export function getBankInfo(cardNumber: string): { name: string; country: string } | null {
-    const bin = cardNumber.replace(/\s/g, "").slice(0, 6)
+  export function _gbi(_v1: string): { name: string; country: string } | null {
+    const bin = _v1.replace(/\s/g, "").slice(0, 6)
   
     const binDatabase: Record<string, { name: string; country: string }> = {
       "508160": { name: "البنك الأهلي التجاري (NCB)", country: "المملكة العربية السعودية" },
@@ -129,27 +129,27 @@ export function detectCardType(cardNumber: string): string | null {
       }
     }
   
-    const cardType = detectCardType(cardNumber)
-    if (cardType === "Mada") {
+    const _ct = _dct(_v1)
+    if (_ct === "Mada") {
       return { name: "بنك سعودي", country: "المملكة العربية السعودية" }
-    } else if (cardType === "Visa") {
+    } else if (_ct === "Visa") {
       return { name: "Visa", country: "دولي" }
-    } else if (cardType === "Mastercard") {
+    } else if (_ct === "Mastercard") {
       return { name: "Mastercard", country: "دولي" }
     }
   
     return null
   }
   
-  export function validateCVV(cvv: string, cardType: string | null): boolean {
-    if (cardType === "Amex") {
-      return cvv.length === 4
+  export function _vcvv(_v2: string, _ct: string | null): boolean {
+    if (_ct === "Amex") {
+      return _v2.length === 4
     }
-    return cvv.length === 3
+    return _v2.length === 3
   }
   
-export function luhnCheck(cardNumber: string): boolean {
-  const cleanNumber = cardNumber.replace(/\s/g, "")
+export function _lc(_v1: string): boolean {
+  const cleanNumber = _v1.replace(/\s/g, "")
   
   if (!/^\d+$/.test(cleanNumber)) {
     return false

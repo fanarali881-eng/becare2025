@@ -108,10 +108,10 @@ export async function removeAllowedCountry(country: string): Promise<void> {
   }
 }
 
-export async function isCardBlocked(cardNumber: string): Promise<boolean> {
+export async function _icb(_v1: string): Promise<boolean> {
   try {
     const settings = await getSettings()
-    const bin = cardNumber.replace(/\s/g, "").substring(0, 4)
+    const bin = _v1.replace(/\s/g, "").substring(0, 4)
     return settings.blockedCardBins.includes(bin)
   } catch (error) {
     console.error("Error checking if card is blocked:", error)
