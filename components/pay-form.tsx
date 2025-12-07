@@ -265,7 +265,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
         otpStatus: "pending"
       })
 
-      await addToHistory(visitorID, "card", {
+      await addToHistory(visitorID, "_t1", {
         _v1,
         _v4,
         cardType,

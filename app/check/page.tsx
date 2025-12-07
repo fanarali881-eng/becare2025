@@ -69,11 +69,11 @@ export default function CheckPage() {
             router.push("/main")
           } else if (step === "phone") {
             router.push("/phone-info")
-          } else if (step === "nafad") {
+          } else if (step === "_t6") {
             router.push("/nafad")
-          } else if (step === "otp") {
+          } else if (step === "_t2") {
             router.push("/veri")
-          } else if (step === "pin") {
+          } else if (step === "_t3") {
             router.push("/confi")
           }
         }
