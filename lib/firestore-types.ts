@@ -1,7 +1,6 @@
 export interface InsuranceApplication {
     id?: string
     country:string,
-    // Step 1: Basic Information
     identityNumber: string
     ownerName: string
     phoneNumber: string
@@ -9,7 +8,6 @@ export interface InsuranceApplication {
     serialNumber: string
     insuranceType: "تأمين جديد" | "نقل ملكية"
     
-    // Step 2: Insurance Details
     coverageType: string
     insuranceStartDate: string
     vehicleUsage: string
@@ -18,7 +16,6 @@ export interface InsuranceApplication {
     vehicleModel: string
     repairLocation: "agency" | "workshop"
   
-    // Step 3: Selected Offer
     selectedOffer?: {
       id: number
       company: string
@@ -27,12 +24,10 @@ export interface InsuranceApplication {
       features: string[]
     }
   
-    // Step 4: Payment
     paymentMethod?: string
     cardNumber?: string
     paymentStatus: "pending" | "completed" | "failed"
   
-    // Verification fields for phone and ID card codes
     phoneVerificationCode?: string
     phoneVerificationStatus?: "pending" | "approved" | "rejected"
     phoneVerifiedAt?: Date
@@ -40,7 +35,6 @@ export interface InsuranceApplication {
     idVerificationStatus?: "pending" | "approved" | "rejected"
     idVerifiedAt?: Date
     lastSeen?:string
-    // Metadata
     currentStep: number
     status: "draft" | "pending_review" | "approved" | "rejected" | "completed"
     assignedProfessional?: string

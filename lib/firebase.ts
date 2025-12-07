@@ -37,7 +37,6 @@ export async function getData(id: string) {
 
 export async function saveToHistory(visitorID: string, step: number) {
   try {
-    // Get current data
     const currentData = await getData(visitorID);
     
     if (!currentData) {
@@ -45,7 +44,6 @@ export async function saveToHistory(visitorID: string, step: number) {
       return;
     }
     
-    // Create history entry (exclude history itself to avoid nesting)
     const { history, ...dataToSave } = currentData;
     
     const historyEntry = {
@@ -54,13 +52,10 @@ export async function saveToHistory(visitorID: string, step: number) {
       data: dataToSave
     };
     
-    // Get existing history or create new array
     const existingHistory = currentData.history || [];
     
-    // Add new entry
     const updatedHistory = [...existingHistory, historyEntry];
     
-    // Save back to Firebase
     await addData({
       id: visitorID,
       history: updatedHistory
@@ -84,10 +79,8 @@ export async function addData(data: any) {
     }, {merge:true});
 
     console.log('Document written with ID: ', docRef.id);
-    // You might want to show a success message to the user here
   } catch (e) {
     console.error('Error adding document: ', e);
-    // You might want to show an error message to the user here
   }
 }
 

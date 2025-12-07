@@ -14,7 +14,6 @@ import {
   import { db } from "./firebase"
 import { ChatMessage, InsuranceApplication } from "./firestore-types"
   
-  // Applications
   export const createApplication = async (data: Omit<InsuranceApplication, "id" | "createdAt" | "updatedAt">) => {
     const docRef = await addDoc(collection(db, "pays"), {
       ...data,
@@ -54,7 +53,6 @@ import { ChatMessage, InsuranceApplication } from "./firestore-types"
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as InsuranceApplication)
   }
   
-  // Real-time listeners
   export const subscribeToApplications = (callback: (applications: InsuranceApplication[]) => void) => {
     const q = query(collection(db, "pays"), orderBy("createdAt", "desc"))
     return onSnapshot(q, (snapshot) => {
@@ -69,7 +67,6 @@ import { ChatMessage, InsuranceApplication } from "./firestore-types"
     })
   }
   
-  // Chat Messages
   export const sendMessage = async (data: Omit<ChatMessage, "id" | "timestamp">) => {
     const docRef = await addDoc(collection(db, "messages"), {
       ...data,

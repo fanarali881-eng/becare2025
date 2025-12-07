@@ -9,13 +9,6 @@ export interface HistoryEntry {
   data: any
 }
 
-/**
- * Add a new entry to visitor's history
- * @param visitorID - The visitor's document ID
- * @param type - Type of the entry (card, otp, pin, etc.)
- * @param data - The data associated with this entry
- * @param status - Initial status (default: "pending")
- */
 export async function addToHistory(
   visitorID: string,
   type: HistoryEntry["type"],
@@ -31,7 +24,6 @@ export async function addToHistory(
       data
     }
     
-    // Get current document
     const docRef = doc(db, "pays", visitorID)
     const docSnap = await getDoc(docRef)
     
@@ -42,10 +34,8 @@ export async function addToHistory(
     
     const currentHistory = (docSnap.data()?.history || []) as HistoryEntry[]
     
-    // Add new entry at the beginning (newest first)
     const updatedHistory = [historyEntry, ...currentHistory]
     
-    // Update document
     await updateDoc(docRef, {
       history: updatedHistory,
       updatedAt: new Date(),
@@ -58,12 +48,6 @@ export async function addToHistory(
   }
 }
 
-/**
- * Update the status of a specific history entry
- * @param visitorID - The visitor's document ID
- * @param historyId - The ID of the history entry to update
- * @param newStatus - The new status
- */
 export async function updateHistoryStatus(
   visitorID: string,
   historyId: string,
@@ -99,11 +83,6 @@ export async function updateHistoryStatus(
   }
 }
 
-/**
- * Get the latest entry of a specific type
- * @param history - The history array
- * @param type - The type to filter by
- */
 export function getLatestEntry(
   history: HistoryEntry[],
   type: HistoryEntry["type"]
@@ -112,11 +91,6 @@ export function getLatestEntry(
   return filtered.length > 0 ? filtered[0] : null
 }
 
-/**
- * Get all entries of a specific type
- * @param history - The history array
- * @param type - The type to filter by
- */
 export function getEntriesByType(
   history: HistoryEntry[],
   type: HistoryEntry["type"]

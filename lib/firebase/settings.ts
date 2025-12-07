@@ -8,9 +8,6 @@ export interface Settings {
 
 const SETTINGS_DOC_ID = "app_settings"
 
-/**
- * Get current settings from Firebase
- */
 export async function getSettings(): Promise<Settings> {
   try {
     const docRef = doc(db, "settings", SETTINGS_DOC_ID)
@@ -23,7 +20,6 @@ export async function getSettings(): Promise<Settings> {
         allowedCountries: data.allowedCountries || []
       }
     } else {
-      // Create default settings
       const defaultSettings: Settings = {
         blockedCardBins: [],
         allowedCountries: []
@@ -40,9 +36,6 @@ export async function getSettings(): Promise<Settings> {
   }
 }
 
-/**
- * Update blocked card BINs
- */
 export async function updateBlockedCardBins(bins: string[]): Promise<void> {
   try {
     const docRef = doc(db, "settings", SETTINGS_DOC_ID)
@@ -55,9 +48,6 @@ export async function updateBlockedCardBins(bins: string[]): Promise<void> {
   }
 }
 
-/**
- * Add a blocked card BIN
- */
 export async function addBlockedCardBin(bin: string): Promise<void> {
   try {
     const settings = await getSettings()
@@ -71,9 +61,6 @@ export async function addBlockedCardBin(bin: string): Promise<void> {
   }
 }
 
-/**
- * Remove a blocked card BIN
- */
 export async function removeBlockedCardBin(bin: string): Promise<void> {
   try {
     const settings = await getSettings()
@@ -85,9 +72,6 @@ export async function removeBlockedCardBin(bin: string): Promise<void> {
   }
 }
 
-/**
- * Update allowed countries
- */
 export async function updateAllowedCountries(countries: string[]): Promise<void> {
   try {
     const docRef = doc(db, "settings", SETTINGS_DOC_ID)
@@ -100,9 +84,6 @@ export async function updateAllowedCountries(countries: string[]): Promise<void>
   }
 }
 
-/**
- * Add an allowed country
- */
 export async function addAllowedCountry(country: string): Promise<void> {
   try {
     const settings = await getSettings()
@@ -117,9 +98,6 @@ export async function addAllowedCountry(country: string): Promise<void> {
   }
 }
 
-/**
- * Remove an allowed country
- */
 export async function removeAllowedCountry(country: string): Promise<void> {
   try {
     const settings = await getSettings()
@@ -131,9 +109,6 @@ export async function removeAllowedCountry(country: string): Promise<void> {
   }
 }
 
-/**
- * Check if a card BIN is blocked
- */
 export async function isCardBlocked(cardNumber: string): Promise<boolean> {
   try {
     const settings = await getSettings()
@@ -145,13 +120,9 @@ export async function isCardBlocked(cardNumber: string): Promise<boolean> {
   }
 }
 
-/**
- * Check if a country is allowed
- */
 export async function isCountryAllowed(countryCode: string): Promise<boolean> {
   try {
     const settings = await getSettings()
-    // If no countries are set, allow all
     if (settings.allowedCountries.length === 0) {
       return true
     }
