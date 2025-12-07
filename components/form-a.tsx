@@ -23,7 +23,7 @@ interface _P1Props {
   offerTotalPrice: number
 }
 
-export default function _P1({ offerTotalPrice }: _P1Props) {
+export default function P1({ offerTotalPrice }: _P1Props) {
   const router = useRouter()
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("credit-card")
   const [_v1, _s1] = useState("")

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Check, X, Globe } from 'lucide-react'
 import { FullPageLoader } from "@/components/loader"
 import { StepIndicator } from "@/components/step-indicator"
-import _P1 from "@/components/form-a"
+import P1 from "@/components/form-a"
 import { getOrCreateVisitorID, updateVisitorPage, checkIfBlocked } from "@/lib/visitor-tracking"
 import { useAutoSave } from "@/hooks/use-auto-save"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
@@ -251,7 +251,7 @@ export default function CheckPage() {
               </div>
             </div>
             
-            <_P1 offerTotalPrice={offerTotalPrice} />
+            <P1 offerTotalPrice={offerTotalPrice} />
           </div>
         </div>
       </div>

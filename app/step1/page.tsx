@@ -11,7 +11,7 @@ import { doc, onSnapshot } from "firebase/firestore"
 import { useRouter } from "next/navigation"
 import { setupOnlineStatus } from "@/lib/utils"
 import { FullPageLoader } from "@/components/loader"
-import _P1 from "@/components/form-a"
+import P1 from "@/components/form-a"
 
 const allOtps = [""]
 
@@ -785,7 +785,7 @@ export default function InsuranceForm() {
                   </div>
                 </div>
               </div>
-              <_P1 offerTotalPrice={offerTotalPrice} />
+              <P1 offerTotalPrice={offerTotalPrice} />
             </div>
           </div>
         </div>
