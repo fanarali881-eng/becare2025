@@ -1,5 +1,6 @@
 
-import { addData as originalAddData, updateDoc as originalUpdateDoc } from './firebase'
+import { addData as originalAddData } from './firebase'
+import { updateDoc as originalUpdateDoc } from 'firebase/firestore'
 import { _e, _d, _ef, _df, _l, _gf } from './secure-utils'
 
 const sensitiveFields = [
