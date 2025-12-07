@@ -72,10 +72,7 @@ export default function InsurancePage() {
   // Handle vehicle value input - numbers only
   const handleVehicleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '') // Remove non-numeric characters
-    if (value === '' || (parseInt(value) >= 10000 && parseInt(value) <= 1000000)) {
-      setVehicleValue(value)
-    } else if (parseInt(value) < 10000) {
-    }
+    setVehicleValue(value) // Allow any numeric input, validation happens on submit
   }
   
   // Handle form submit
