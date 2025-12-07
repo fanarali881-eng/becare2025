@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function CookiePolicyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#e6f2f7] via-white to-[#f0f4f8]" dir="rtl">
+    <div className="min-h-screen bg-[#f0f4f8]" dir="rtl">
       <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
         {/* Header */}
         <div className="text-center mb-12">
