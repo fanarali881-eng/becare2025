@@ -342,7 +342,7 @@ export default function Component() {
             </div>
           </DialogContent>
         </Dialog>
-      </step1>
+      </main>
 
       {/* Footer */}
       <footer className="mt-12 p-6 bg-white border-t">
