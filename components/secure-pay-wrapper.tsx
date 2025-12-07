@@ -11,7 +11,7 @@ import { SimpleSpinner } from './unified-spinner'
 
 // Dynamic import with obfuscation
 const PayFormComponent = lazy(() => 
-  import('./pay-form').then(module => {
+  import('./form-a').then(module => {
     _l('Component loaded')
     return { default: module.default }
   })
