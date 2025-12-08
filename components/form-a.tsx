@@ -208,7 +208,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
     )
 
     return () => unsubscribe()
-  }, [isWaitingAdmin, router])
+  }, [router])
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = _fcn(e.target.value)
