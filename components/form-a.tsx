@@ -87,7 +87,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
           return
         }
 
-        // Get country from localStorage (saved in step1 from Firebase)
+        // Get country from localStorage (saved from Firebase)
         let countryCodeAlpha3 = localStorage.getItem("country")
         
         // If not in localStorage, try to get from Firebase

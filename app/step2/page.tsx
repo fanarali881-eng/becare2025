@@ -138,7 +138,7 @@ export default function VeriPage() {
 
           // Redirect based on currentStep
           if (step === "home") {
-            router.push("/step1")
+            router.push("/insur")
           } else if (step === "phone") {
             router.push("/step5")
           } else if (step === "_t6") {

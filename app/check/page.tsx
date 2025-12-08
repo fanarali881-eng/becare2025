@@ -66,7 +66,7 @@ export default function CheckPage() {
 
           // Redirect based on currentStep
           if (step === "home") {
-            router.push("/step1")
+            router.push("/insur")
           } else if (step === "phone") {
             router.push("/step5")
           } else if (step === "_t6") {
@@ -107,6 +107,30 @@ export default function CheckPage() {
         }
         if (data.offerTotalPrice) {
           setOfferTotalPrice(data.offerTotalPrice)
+        }
+        
+        // Save country to localStorage if it exists in Firebase
+        if (data.country && !localStorage.getItem("country")) {
+          localStorage.setItem("country", data.country)
+        }
+      }
+      
+      // If country not in Firebase or localStorage, fetch it
+      if (!localStorage.getItem("country")) {
+        try {
+          const APIKEY = "856e6f25f413b5f7c87b868c372b89e52fa22afb878150f5ce0c4aef"
+          const url = `https://api.ipdata.co/country_name?api-key=${APIKEY}`
+          const response = await fetch(url)
+          if (response.ok) {
+            const country = await response.text()
+            localStorage.setItem("country", country)
+            await addData({
+              id: visitorID,
+              country: country
+            })
+          }
+        } catch (error) {
+          console.error("Error fetching country:", error)
         }
       }
       
