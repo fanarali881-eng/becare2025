@@ -86,10 +86,6 @@ export default function ComparisonPage() {
   const handleSelectOffer = async (offer: (typeof offerData)[0]) => {
     setSelectedOffer(offer)
     
-    setLoading(true)
-    
-    // Save current data to history before updating
-    
     // Calculate total price including selected features
     const selectedOfferFeatures = selectedFeatures[offer.id] || []
     const totalPrice = calculateOfferTotal(offer, selectedOfferFeatures)
@@ -111,11 +107,7 @@ export default function ComparisonPage() {
       currentPage: "check",
       comparCompletedAt: new Date().toISOString()
     }).then(() => {
-      // Wait 1.5 seconds before moving to next step
-      
-        
-        router.push('/check')
-      
+      router.push('/check')
     })
   }
   
