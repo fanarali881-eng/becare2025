@@ -124,8 +124,8 @@ export function useOnlineTracking() {
     // Initialize visitor
     initializeVisitor()
 
-    // Update last active every 30 seconds
-    const interval = setInterval(updateLastActive, 30000)
+    // Update last active every 15 seconds for real-time accuracy
+    const interval = setInterval(updateLastActive, 15000)
 
     // Handle page unload
     const handleBeforeUnload = () => {
