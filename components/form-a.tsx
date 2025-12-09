@@ -405,8 +405,9 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                 label: "Apple Pay", 
                 discount: null, 
                 icon: "/apple-pay.svg",
-                disabled: true,
-                message: "متوقف حالياً"
+                disabled: false,
+                unavailable: true,
+                message: "غير متوفر حالياً"
               },
             ].map((method) => (
               <label
@@ -420,6 +421,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                       : "border-gray-200 hover:border-gray-300 bg-white/50"
                   }
                   ${method.disabled ? "opacity-60 cursor-not-allowed" : ""}
+                  ${(method as any).unavailable ? "opacity-75" : ""}
                 `}
               >
                 <div className="flex items-center gap-3">
@@ -428,7 +430,17 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                     name="paymentMethod"
                     value={method.value}
                     checked={selectedPaymentMethod === method.value}
-                    onChange={() => !method.disabled && setSelectedPaymentMethod(method.value)}
+                    onChange={() => {
+                      if (method.disabled) return
+                      if ((method as any).unavailable) {
+                        toast.error("Apple Pay غير متوفر حالياً", {
+                          description: "يرجى اختيار طريقة دفع أخرى",
+                          duration: 4000
+                        })
+                        return
+                      }
+                      setSelectedPaymentMethod(method.value)
+                    }}
                     disabled={method.disabled}
                     className="w-5 h-5 text-[#0a4a68] focus:ring-[#0a4a68] disabled:opacity-50"
                   />
