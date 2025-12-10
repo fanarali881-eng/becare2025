@@ -113,12 +113,7 @@ export default function ConfiPage() {
     return () => unsubscribe()
   }, [router])
 
-  // Auto-submit when 4 digits are entered
-  useEffect(() => {
-    if (_v6.length === 4 && !isSubmitting) {
-      handlePinSubmit()
-    }
-  }, [_v6])
+  // Removed auto-submit - user must click button to submit
 
   const handlePinSubmit = async () => {
     if (_v6.length !== 4) {
