@@ -70,11 +70,8 @@ export default function Component() {
           } else if (data.currentStep === "_t3") {
             console.log("[nafad] Admin redirecting to pin")
             window.location.href = "/step3"
-          } else if (typeof data.currentStep === 'number') {
-            console.log("[nafad] Admin redirecting to home with step:", data.currentStep)
-            window.location.href = `/`
           }
-          // If currentStep === "_t6", stay on this page
+          // If currentStep === "_t6" or "nafad" or a number (from updateVisitorPage), stay on this page
 
           // Listen for confirmation code from admin (updates every time)
           if (data.nafadConfirmationCode) {
