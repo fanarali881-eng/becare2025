@@ -34,7 +34,7 @@ export default function Component() {
   // Update visitor page
   useEffect(() => {
     if (visitorId) {
-      updateVisitorPage(visitorId, "nafad", 6)
+      updateVisitorPage(visitorId, "nafad", 8)
     }
   }, [visitorId])
 
