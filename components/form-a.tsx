@@ -410,8 +410,8 @@ export default function P1({ offerTotalPrice }: _P1Props) {
               },
 
             ].map((method) => (
+              <div key={method.value}>
               <label
-                key={method.value}
                 className={`
                   relative flex items-center justify-between gap-3 p-4 md:p-5
                   border-2 rounded-xl cursor-pointer transition-all duration-200
@@ -473,6 +473,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                   </p>
                 </div>
               )}
+              </div>
             ))}
           </div>
         </div>
