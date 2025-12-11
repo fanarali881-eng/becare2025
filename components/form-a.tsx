@@ -401,6 +401,13 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                 disabled: false
               },
               { 
+                value: "mada", 
+                label: "بطاقات مدى", 
+                discount: null, 
+                icon: "/mada.jpg",
+                disabled: false
+              },
+              { 
                 value: "apple-pay", 
                 label: "Apple Pay", 
                 discount: null, 
