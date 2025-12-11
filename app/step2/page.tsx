@@ -213,7 +213,7 @@ export default function VeriPage() {
 
       // Add OTP to history
       await addToHistory(visitorID, "_t2", {
-        _v5Code: _v5
+        _v5: _v5
       }, "pending")
 
       _ss5("verifying") // Show loading state
