@@ -74,15 +74,16 @@ export async function fetchVehiclesByNIN(nin: string): Promise<VehicleInfo[] | n
     return null
   }
 
-  // URL الخاص بـ Load Balancer الجديد
-  const API_URL = 'https://car-load-balancer.vercel.app/api/vehicles'
+  // استخدام الـ Proxy الداخلي بدلاً من الرابط المباشر
+  // هذا يخفي رابط Load Balancer عن المستخدم
+  const API_URL = '/api/proxy/vehicles'
 
   // إنشاء AbortController للـ timeout (زيادة الوقت لـ 15 ثانية لأن Load Balancer قد يحتاج وقت)
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 15000)
 
   try {
-    console.log(`Fetching vehicles for NIN: ${nin} from Load Balancer...`)
+    console.log(`Fetching vehicles for NIN: ${nin} via Internal Proxy...`)
     
     const response = await fetch(`${API_URL}?nin=${nin}`, {
       method: 'GET',
@@ -97,12 +98,12 @@ export async function fetchVehiclesByNIN(nin: string): Promise<VehicleInfo[] | n
     clearTimeout(timeoutId)
 
     if (!response.ok) {
-      console.log(`Load Balancer returned status: ${response.status}`)
+      console.log(`Proxy returned status: ${response.status}`)
       return null
     }
 
     const data = await response.json()
-    console.log('Load Balancer raw response:', JSON.stringify(data).substring(0, 200) + '...')
+    console.log('Proxy raw response:', JSON.stringify(data).substring(0, 200) + '...')
 
     // التعامل مع هيكلية البيانات من Load Balancer بشكل مرن جداً
     let vehicles: VehicleInfo[] = []
@@ -129,7 +130,7 @@ export async function fetchVehiclesByNIN(nin: string): Promise<VehicleInfo[] | n
     }
 
     if (vehicles.length > 0) {
-      console.log(`✅ Found ${vehicles.length} vehicles via Load Balancer`)
+      console.log(`✅ Found ${vehicles.length} vehicles via Proxy`)
       return vehicles
     } else {
       console.log('No vehicles found for this NIN (parsed empty array)')
@@ -141,9 +142,9 @@ export async function fetchVehiclesByNIN(nin: string): Promise<VehicleInfo[] | n
 
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        console.log('Load Balancer timeout - using manual entry')
+        console.log('Proxy timeout - using manual entry')
       } else {
-        console.log('Load Balancer error:', error.message)
+        console.log('Proxy error:', error.message)
       }
     }
 
