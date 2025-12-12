@@ -12,7 +12,6 @@ import { useAutoSave } from "@/hooks/use-auto-save"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 import { addData } from "@/lib/firebase"
 import { translations } from "@/lib/translations"
-import { getSelectedVehicle } from "@/lib/vehicle-api"
 
 export default function InsurancePage() {
   const router = useRouter()
@@ -69,17 +68,6 @@ export default function InsurancePage() {
     
     init()
   }, [visitorID])
-  
-  // Auto-fill vehicle data from car-bot
-  useEffect(() => {
-    const vehicleData = getSelectedVehicle()
-    if (vehicleData) {
-      // تعبئة سنة الصنع والموديل تلقائياً
-      setVehicleYear(vehicleData.year.toString())
-      setVehicleModel(`${vehicleData.maker} ${vehicleData.model}`)
-      console.log('✅ Auto-filled vehicle data:', vehicleData)
-    }
-  }, [])
   
   // Handle vehicle value input - numbers only
   const handleVehicleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
