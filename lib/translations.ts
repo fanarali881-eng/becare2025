@@ -33,6 +33,7 @@ export const translations = {
     identityMustStartWith12: "رقم الهوية يجب أن يبدأ بـ 1 أو 2",
     invalidIdentityNumber: "رقم الهوية غير صالح",
     incorrectCaptcha: "رمز التحقق غير صحيح",
+    incorrectVerificationCode: "رمز التحقق غير صحيح",
   },
   en: {
     vehicles: "Vehicles",
@@ -68,6 +69,7 @@ export const translations = {
     identityMustStartWith12: "ID number must start with 1 or 2",
     invalidIdentityNumber: "Invalid ID number",
     incorrectCaptcha: "Incorrect verification code",
+    incorrectVerificationCode: "Incorrect verification code",
   },
 }
 
