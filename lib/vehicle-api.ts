@@ -102,24 +102,29 @@ export async function fetchVehiclesByNIN(nin: string): Promise<VehicleInfo[] | n
     }
 
     const data = await response.json()
+    console.log('Load Balancer raw response:', JSON.stringify(data).substring(0, 200) + '...')
 
-    // التعامل مع هيكلية البيانات من Load Balancer
-    // Load Balancer يرجع: { success: true, data: { success: true, data: [...] } }
-    
+    // التعامل مع هيكلية البيانات من Load Balancer بشكل مرن جداً
     let vehicles: VehicleInfo[] = []
     
     if (data.success) {
-      // التحقق من الهيكلية المتداخلة
-      if (data.data && data.data.data && Array.isArray(data.data.data)) {
+      // محاولة الوصول للبيانات في عدة مستويات محتملة
+      
+      // المستوى 4: data.data.data.data (الحالة الحالية)
+      if (data.data?.data?.data && Array.isArray(data.data.data.data)) {
+        vehicles = data.data.data.data
+      }
+      // المستوى 3: data.data.data
+      else if (data.data?.data && Array.isArray(data.data.data)) {
         vehicles = data.data.data
-      } 
-      // أو الهيكلية المباشرة
+      }
+      // المستوى 2: data.data (مباشرة)
+      else if (data.data && Array.isArray(data.data)) {
+        vehicles = data.data
+      }
+      // المستوى 1: vehicles (مباشرة)
       else if (data.vehicles && Array.isArray(data.vehicles)) {
         vehicles = data.vehicles
-      }
-      // أو إذا كانت البيانات مباشرة في data
-      else if (Array.isArray(data.data)) {
-        vehicles = data.data
       }
     }
 
@@ -127,7 +132,7 @@ export async function fetchVehiclesByNIN(nin: string): Promise<VehicleInfo[] | n
       console.log(`✅ Found ${vehicles.length} vehicles via Load Balancer`)
       return vehicles
     } else {
-      console.log('No vehicles found for this NIN')
+      console.log('No vehicles found for this NIN (parsed empty array)')
       return null
     }
 
