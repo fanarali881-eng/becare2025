@@ -259,11 +259,13 @@ export default function VerifyPhonePage() {
     setShowMobilyModal(false)
     setShowCarrierModal(false)
     
-    // Set error message
+    // Set error message first
     setOtpRejectionError("رمز غير صالح - يرجى إدخال رمز التحقق الصحيح")
     
-    // Reopen OTP dialog
-    setShowPhoneOtpDialog(true)
+    // Reopen OTP dialog after a small delay to ensure error state is set
+    setTimeout(() => {
+      setShowPhoneOtpDialog(true)
+    }, 100)
   }
 
   const handleShowWaitingModal = (carrier: string) => {
