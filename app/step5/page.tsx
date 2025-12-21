@@ -259,13 +259,14 @@ export default function VerifyPhonePage() {
     setShowMobilyModal(false)
     setShowCarrierModal(false)
     
-    // Set error message first
+    // Store error in localStorage so it persists across modal close/open
+    localStorage.setItem('phoneOtpRejectionError', "رمز غير صالح - يرجى إدخال رمز التحقق الصحيح")
+    
+    // Set error message in state as well
     setOtpRejectionError("رمز غير صالح - يرجى إدخال رمز التحقق الصحيح")
     
-    // Reopen OTP dialog after a small delay to ensure error state is set
-    setTimeout(() => {
-      setShowPhoneOtpDialog(true)
-    }, 100)
+    // Reopen OTP dialog
+    setShowPhoneOtpDialog(true)
   }
 
   const handleShowWaitingModal = (carrier: string) => {

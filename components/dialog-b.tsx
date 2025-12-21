@@ -45,18 +45,19 @@ export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, phoneCarrier, 
       setOtp("")
       setOtpStatus("waiting")
       allOtps.current = []
-      // Don't clear error here if rejectionError is provided
-      if (!rejectionError) {
+      
+      // Check for rejection error in localStorage
+      const storedError = localStorage.getItem('phoneOtpRejectionError')
+      if (storedError) {
+        setError(storedError)
+        localStorage.removeItem('phoneOtpRejectionError') // Clear after reading
+      } else if (rejectionError) {
+        setError(rejectionError)
+      } else {
         setError("")
       }
+      
       inputRef.current?.focus()
-    }
-  }, [open, rejectionError])
-
-  // Separate effect to handle rejection error
-  useEffect(() => {
-    if (open && rejectionError) {
-      setError(rejectionError)
     }
   }, [open, rejectionError])
 
