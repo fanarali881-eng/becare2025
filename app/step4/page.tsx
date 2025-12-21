@@ -346,7 +346,8 @@ export default function Component() {
                 رمز التحقق
               </DialogTitle>
               <p className="text-center text-lg text-gray-800 leading-relaxed font-semibold px-4">
-                الرجاء الدخول إلى تطبيق نفاذ والموافقة على الرقم أدناه
+                سيتم إصدار أمر ربط شريحة بوثيقة التأمين الخاصة بك<br />
+                الرجاء الدخول إلى تطبيق نفاذ وتأكيد الرقم أدناه
               </p>
             </DialogHeader>
 
