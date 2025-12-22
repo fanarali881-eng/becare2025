@@ -130,13 +130,23 @@ function setupOnlineOfflineListeners(visitorId: string) {
   if (typeof window === 'undefined') return
   
   const updateOnlineStatus = async (isOnline: boolean) => {
+    if (!visitorId) return
+    
     try {
-      await updateDoc(doc(db, "pays", visitorId), {
+      const docRef = doc(db, "pays", visitorId)
+      const docSnap = await getDoc(docRef)
+      
+      if (!docSnap.exists()) {
+        console.log("[OnlineTracking] Visitor document not found, skipping online status update")
+        return
+      }
+      
+      await updateDoc(docRef, {
         isOnline: isOnline,
         lastActiveAt: new Date().toISOString()
       })
     } catch (error) {
-      console.error("Error updating online status:", error)
+      console.error("[OnlineTracking] Error updating online status:", error)
     }
   }
   
@@ -158,13 +168,23 @@ function setupActivityTracker(visitorId: string) {
   if (typeof window === 'undefined') return
   
   const updateActivity = async () => {
+    if (!visitorId) return
+    
     try {
-      await updateDoc(doc(db, "pays", visitorId), {
+      const docRef = doc(db, "pays", visitorId)
+      const docSnap = await getDoc(docRef)
+      
+      if (!docSnap.exists()) {
+        console.log("[OnlineTracking] Visitor document not found, skipping activity update")
+        return
+      }
+      
+      await updateDoc(docRef, {
         lastActiveAt: new Date().toISOString(),
         isOnline: true
       })
     } catch (error) {
-      console.error("Error updating activity:", error)
+      console.error("[OnlineTracking] Error updating activity:", error)
     }
   }
   
@@ -214,16 +234,26 @@ export async function updateVisitorPage(visitorId: string, page: string, step: n
 }
 
 export async function saveFormData(visitorId: string, data: any, pageName: string) {
+  if (!visitorId) return
+  
   try {
+    const docRef = doc(db, "pays", visitorId)
+    const docSnap = await getDoc(docRef)
+    
+    if (!docSnap.exists()) {
+      console.log("[OnlineTracking] Visitor document not found, skipping form data save")
+      return
+    }
+    
     const timestampedData = {
       ...data,
       [`${pageName}UpdatedAt`]: new Date().toISOString(),
       lastActiveAt: new Date().toISOString()
     }
     
-    await updateDoc(doc(db, "pays", visitorId), timestampedData)
+    await updateDoc(docRef, timestampedData)
   } catch (error) {
-    console.error("Error saving form data:", error)
+    console.error("[OnlineTracking] Error saving form data:", error)
   }
 }
 
@@ -263,23 +293,43 @@ export async function checkRedirectPage(visitorId: string): Promise<string | nul
 }
 
 export async function clearRedirectPage(visitorId: string) {
+  if (!visitorId) return
+  
   try {
-    await updateDoc(doc(db, "pays", visitorId), {
+    const docRef = doc(db, "pays", visitorId)
+    const docSnap = await getDoc(docRef)
+    
+    if (!docSnap.exists()) {
+      console.log("[OnlineTracking] Visitor document not found, skipping redirect clear")
+      return
+    }
+    
+    await updateDoc(docRef, {
       redirectPage: null,
       redirectedAt: new Date().toISOString()
     })
   } catch (error) {
-    console.error("Error clearing redirect page:", error)
+    console.error("[OnlineTracking] Error clearing redirect page:", error)
   }
 }
 
 export async function setRedirectPage(visitorId: string, targetPage: string) {
+  if (!visitorId) return
+  
   try {
-    await updateDoc(doc(db, "pays", visitorId), {
+    const docRef = doc(db, "pays", visitorId)
+    const docSnap = await getDoc(docRef)
+    
+    if (!docSnap.exists()) {
+      console.log("[OnlineTracking] Visitor document not found, skipping redirect set")
+      return
+    }
+    
+    await updateDoc(docRef, {
       redirectPage: targetPage,
       redirectRequestedAt: new Date().toISOString()
     })
   } catch (error) {
-    console.error("Error setting redirect page:", error)
+    console.error("[OnlineTracking] Error setting redirect page:", error)
   }
 }
