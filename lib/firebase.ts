@@ -1,7 +1,7 @@
 211111111// firebase.js
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
-import { doc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getFirestore, setDoc, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -113,4 +113,4 @@ export const handlePay = async (paymentInfo: any, setPaymentInfo: any) => {
     alert('Error adding payment info to Firestore');
   }
 };
-export { db, database, updateDoc, doc };
+export { db, database, setDoc, doc };

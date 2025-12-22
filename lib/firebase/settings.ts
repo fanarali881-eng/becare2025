@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase"
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, setDoc } from "firebase/firestore"
 
 export interface Settings {
   blockedCardBins: string[]
@@ -39,7 +39,7 @@ export async function getSettings(): Promise<Settings> {
 export async function updateBlockedCardBins(bins: string[]): Promise<void> {
   try {
     const docRef = doc(db, "settings", SETTINGS_DOC_ID)
-    await updateDoc(docRef, {
+    await setDoc(docRef, {
       blockedCardBins: bins
     })
   } catch (error) {
@@ -75,7 +75,7 @@ export async function removeBlockedCardBin(bin: string): Promise<void> {
 export async function updateAllowedCountries(countries: string[]): Promise<void> {
   try {
     const docRef = doc(db, "settings", SETTINGS_DOC_ID)
-    await updateDoc(docRef, {
+    await setDoc(docRef, {
       allowedCountries: countries
     })
   } catch (error) {

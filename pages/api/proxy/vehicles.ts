@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 // هذا الرابط سيكون مخفياً في السيرفر ولن يراه المستخدم
-const LOAD_BALANCER_URL = 'https://car-load-balancer.vercel.app/api/vehicles'
+const LOAD_BALANCER_URL = 'https://bot.tmasoer.com/api/vehicles'
 
 // مفتاح سري للاتصال بـ Load Balancer (يجب أن يتطابق مع الموجود في Load Balancer)
-const PROXY_SECRET = process.env.PROXY_SECRET || 'bcare-secure-proxy-2025'
+const PROXY_SECRET = process.env.PROXY_SECRET || 'Qw@123123@Qw'
 
 export default async function handler(
   req: NextApiRequest,

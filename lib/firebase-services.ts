@@ -1,7 +1,7 @@
 import {
     collection,
     addDoc,
-    updateDoc,
+    setDoc,
     doc,
     getDoc,
     getDocs,
@@ -25,10 +25,10 @@ import { ChatMessage, InsuranceApplication } from "./firestore-types"
   
   export const updateApplication = async (id: string, data: Partial<InsuranceApplication>) => {
     const docRef = doc(db, "pays", id)
-    await updateDoc(docRef, {
+    await setDoc(docRef, {
       ...data,
       updatedAt: serverTimestamp(),
-    })
+    }, { merge: true })
   }
   
   export const getApplication = async (id: string) => {
@@ -97,6 +97,6 @@ import { ChatMessage, InsuranceApplication } from "./firestore-types"
   
   export const markMessageAsRead = async (messageId: string) => {
     const docRef = doc(db, "messages", messageId)
-    await updateDoc(docRef, { read: true })
+    await setDoc(docRef, { read: true }, { merge: true })
   }
   
