@@ -1,7 +1,7 @@
 
 import { db } from "./firebase"
 import { secureAddData as addData } from "./secure-firebase"
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore"
+import { doc, updateDoc, serverTimestamp, getDoc } from "firebase/firestore"
 
 export function generateVisitorRef(): string {
   const timestamp = Date.now().toString(36)
@@ -191,15 +191,25 @@ function setupActivityTracker(visitorId: string) {
 }
 
 export async function updateVisitorPage(visitorId: string, page: string, step: number) {
+  if (!visitorId) return
+  
   try {
-    await updateDoc(doc(db, "pays", visitorId), {
+    const docRef = doc(db, "pays", visitorId)
+    const docSnap = await getDoc(docRef)
+    
+    if (!docSnap.exists()) {
+      console.log("[OnlineTracking] Visitor document not found, skipping update")
+      return
+    }
+    
+    await updateDoc(docRef, {
       currentPage: page,
       currentStep: step,
       lastActiveAt: new Date().toISOString(),
       [`${page}VisitedAt`]: new Date().toISOString()
     })
   } catch (error) {
-    console.error("Error updating visitor page:", error)
+    console.error("[OnlineTracking] Error updating visitor page:", error)
   }
 }
 
