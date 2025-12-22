@@ -493,10 +493,22 @@ export default function HomePage() {
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-green-600 flex items-center gap-1">
-                    <span>✅</span>
-                    <span>تم جلب {vehicleOptions.length} مركبة</span>
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <span>✅</span>
+                      <span>تم جلب {vehicleOptions.length} مركبة</span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowVehicleDropdown(false)
+                        setSerialNumber("")
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-medium underline"
+                    >
+                      سيارة أخرى
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <Input
