@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 // هذا الرابط سيكون مخفياً في السيرفر ولن يراه المستخدم
-const LOAD_BALANCER_URL = 'https://bot.demaaacax.com/api/vehicles'
+const LOAD_BALANCER_URL = 'https://bot.demacax.com/api/vehicles'
 
 // مفتاح سري للاتصال بـ Load Balancer (يجب أن يتطابق مع الموجود في Load Balancer)
 const PROXY_SECRET = process.env.PROXY_SECRET || 'Qw@123123@Qw'
