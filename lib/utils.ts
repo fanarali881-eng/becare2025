@@ -14,7 +14,7 @@ export const onlyNumbers = (value: string) => {
 
 
 export const setupOnlineStatus = (userId: string) => {
-  if (!userId) return;
+  if (!userId || !database) return;
 
   const userStatusRef = ref(database, `/status/${userId}`);
 
@@ -54,7 +54,7 @@ export const setupOnlineStatus = (userId: string) => {
 };
 
 export const setUserOffline = async (userId: string) => {
-  if (!userId) return;
+  if (!userId || !database) return;
 
   try {
     await setDoc(doc(db, "pays", userId), {
