@@ -16,7 +16,7 @@ const firebaseConfig = {
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const database = getDatabase(app);
+const database = firebaseConfig.databaseURL ? getDatabase(app) : null;
 
 export async function getData(id: string) {
   try {
