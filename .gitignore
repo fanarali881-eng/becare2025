@@ -26,6 +26,11 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
+
+# Firebase Admin SDK
+*firebase-adminsdk*.json
+bcare2-firebase-adminsdk.json
 
 # vercel
 .vercel

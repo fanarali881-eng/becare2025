@@ -1,4 +1,4 @@
-211111111// firebase.js
+// firebase.ts
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { doc, getFirestore, setDoc } from 'firebase/firestore';
