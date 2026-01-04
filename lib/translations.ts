@@ -35,6 +35,9 @@ export const translations = {
     invalidIdentityNumber: "رقم الهوية غير صالح",
     incorrectCaptcha: "رمز التحقق غير صحيح",
     incorrectVerificationCode: "رمز التحقق غير صحيح",
+    ownerNameRequired: "اسم المالك مطلوب",
+    phoneNumberRequired: "رقم الهاتف مطلوب",
+    serialNumberRequired: "الرقم التسلسلي مطلوب",
   },
   en: {
     vehicles: "Vehicles",
@@ -72,6 +75,9 @@ export const translations = {
     invalidIdentityNumber: "Invalid ID number",
     incorrectCaptcha: "Incorrect verification code",
     incorrectVerificationCode: "Incorrect verification code",
+    ownerNameRequired: "Owner name is required",
+    phoneNumberRequired: "Phone number is required",
+    serialNumberRequired: "Serial number is required",
   },
 }
 
