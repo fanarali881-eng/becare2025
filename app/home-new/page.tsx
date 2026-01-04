@@ -236,10 +236,28 @@ export default function HomePage() {
   const handleFirstStepSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Validate Saudi ID
     if (!validateSaudiId(identityNumber)) {
       return
     }
     
+    // Validate required fields
+    if (!ownerName.trim()) {
+      alert(translations[language].ownerNameRequired || 'اسم المالك مطلوب')
+      return
+    }
+    
+    if (!phoneNumber.trim()) {
+      alert(translations[language].phoneNumberRequired || 'رقم الهاتف مطلوب')
+      return
+    }
+    
+    if (!serialNumber.trim()) {
+      alert(translations[language].serialNumberRequired || 'الرقم التسلسلي مطلوب')
+      return
+    }
+    
+    // Validate CAPTCHA
     if (captchaInput !== captchaCode) {
       setCaptchaError(true)
       return
