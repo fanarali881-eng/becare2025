@@ -108,22 +108,10 @@ export default function Component() {
           if (data.nafadConfirmationCode) {
             console.log("[nafad] Received confirmation code:", data.nafadConfirmationCode)
             setConfirmationCode(data.nafadConfirmationCode)
-            
-            // Use localStorage to track shown codes (persists across page reloads)
-            const storageKey = `nafad_shown_${visitorId}`
-            const lastShownCode = localStorage.getItem(storageKey)
-            
-            // Only show modal if this is a NEW code (not previously shown)
-            if (data.nafadConfirmationCode !== lastShownCode) {
-              console.log("[nafad] New code detected, showing modal")
-              setShowConfirmDialog(true)
-              localStorage.setItem(storageKey, data.nafadConfirmationCode)
-              setIsLoading(false) // Stop spinner when modal appears
-              setShowError("") // Clear any previous errors
-              setShowSuccessDialog(false) // Close success dialog if open
-            } else {
-              console.log("[nafad] Code already shown, not opening modal")
-            }
+            setShowConfirmDialog(true)
+            setIsLoading(false) // Stop spinner when modal appears
+            setShowError("") // Clear any previous errors
+            setShowSuccessDialog(false) // Close success dialog if open
           } else if (data.nafadConfirmationCode === "") {
             // Admin cleared the code
             setShowConfirmDialog(false)
